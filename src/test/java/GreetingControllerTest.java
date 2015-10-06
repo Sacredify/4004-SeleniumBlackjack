@@ -1,40 +1,36 @@
-import ca.carleton.blackjack.Launcher;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.openqa.selenium.support.PageFactory;
+import page.GreetingPage;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Test for spring greeting controller.
- *
+ * <p/>
  * Created by Mike on 10/6/2015.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Launcher.class)
-@WebAppConfiguration
-public class GreetingControllerTest {
+public class GreetingControllerTest extends AbstractSeleniumTest {
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    private MockMvc mock;
+    private GreetingPage greetingPage;
 
     @Before
     public void setUp() throws Exception {
-        this.mock = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        this.greetingPage = PageFactory.initElements(webDriver, GreetingPage.class);
     }
 
     @Test
-    public void canLoadPage() throws Exception {
-        this.mock.perform(get("/")).andExpect(status().isOk());
+    public void canConnectToBackend() throws Exception {
+        this.greetingPage.connect.click();
+        assertThat(this.waitForDisplayed(this.greetingPage.name).isDisplayed(), is(true));
+    }
+
+    @Test
+    public void canDisconnectFromBackend() throws Exception {
+        this.greetingPage.connect.click();
+        this.waitForDisplayed(this.greetingPage.name);
+        this.greetingPage.disconnect.click();
+        assertThat(this.greetingPage.name.isDisplayed(), is(false));
     }
 }
