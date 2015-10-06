@@ -1,6 +1,5 @@
-import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.support.PageFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import page.GreetingPage;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -13,12 +12,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class GreetingControllerTest extends AbstractSeleniumTest {
 
+    @Autowired
     private GreetingPage greetingPage;
-
-    @Before
-    public void setUp() throws Exception {
-        this.greetingPage = PageFactory.initElements(webDriver, GreetingPage.class);
-    }
 
     @Test
     public void canConnectToBackend() throws Exception {

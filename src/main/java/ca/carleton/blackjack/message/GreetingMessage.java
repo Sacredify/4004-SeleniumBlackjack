@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.entity.message;
+package ca.carleton.blackjack.message;
 
 /**
  * Represents a greeting message passed via JSON.

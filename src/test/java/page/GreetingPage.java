@@ -9,7 +9,7 @@ import org.openqa.selenium.support.FindBy;
  *
  * Created by Mike on 10/6/2015.
  */
-public class GreetingPage {
+public class GreetingPage extends AbstractPage<GreetingPage> {
 
     @FindBy(id = "connect")
     public WebElement connect;
@@ -19,11 +19,5 @@ public class GreetingPage {
 
     @FindBy(id = "name")
     public WebElement name;
-
-    private final WebDriver webDriver;
-
-    public GreetingPage(final WebDriver webDriver) {
-        this.webDriver = webDriver;
-    }
 
 }

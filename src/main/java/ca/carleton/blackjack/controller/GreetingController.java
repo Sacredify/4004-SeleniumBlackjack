@@ -1,7 +1,7 @@
 package ca.carleton.blackjack.controller;
 
-import ca.carleton.blackjack.entity.message.GreetingMessage;
-import ca.carleton.blackjack.entity.message.HelloMessage;
+import ca.carleton.blackjack.message.GreetingMessage;
+import ca.carleton.blackjack.message.HelloMessage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
