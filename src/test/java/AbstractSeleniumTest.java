@@ -24,9 +24,8 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 @SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = BlackJackApplication.class, locations = {"/META-INF/applicationContext.xml"})
-@SeleniumTest
 @WebIntegrationTest(value = "server.port:8080")
-public class AbstractSeleniumTest<T extends AbstractPage> {
+public abstract class AbstractSeleniumTest<T extends AbstractPage> {
 
     @Autowired
     protected WebDriver webDriver;

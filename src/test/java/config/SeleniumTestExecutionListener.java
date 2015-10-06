@@ -3,7 +3,6 @@ package config;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -43,6 +42,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
             final ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) context;
             final ConfigurableListableBeanFactory bf = configurableApplicationContext.getBeanFactory();
             bf.registerResolvableDependency(WebDriver.class, webDriver);
+            LOG.info("Set web driver in text execution listener.");
         }
     }
 

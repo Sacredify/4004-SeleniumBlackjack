@@ -1,3 +1,4 @@
+import config.SeleniumTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import page.EchoPage;
@@ -10,6 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * <p/>
  * Created by Mike on 10/6/2015.
  */
+@SeleniumTest(baseUrl = "http://localhost:8080/")
 public class EchoTest extends AbstractSeleniumTest {
 
     @Autowired

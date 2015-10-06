@@ -1,7 +1,5 @@
 package config;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.test.context.TestExecutionListeners;
 
 import java.lang.annotation.*;
@@ -20,7 +18,10 @@ import java.lang.annotation.*;
 @TestExecutionListeners(listeners = SeleniumTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public @interface SeleniumTest {
 
-    Class<? extends WebDriver> driver() default FirefoxDriver.class;
-
+    /**
+     * The base URL to use for this test
+     *
+     * @return the base URL.
+     */
     String baseUrl() default "http://localhost:8080";
 }
