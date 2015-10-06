@@ -1,4 +1,4 @@
-import ca.carleton.blackjack.Launcher;
+import ca.carleton.blackjack.BlackJackApplication;
 import config.SeleniumTest;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
@@ -12,13 +12,18 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import page.AbstractPage;
 
+import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
+import static org.openqa.selenium.support.ui.ExpectedConditions.not;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
+
 /**
  * Parent test for all selenium classes so we can wait for links.
  * <p/>
  * Created by Mike on 10/6/2015.
  */
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Launcher.class, locations = {"/META-INF/applicationContext.xml"})
+@SpringApplicationConfiguration(classes = BlackJackApplication.class, locations = {"/META-INF/applicationContext.xml"})
 @SeleniumTest
 @WebIntegrationTest(value = "server.port:8080")
 public class AbstractSeleniumTest<T extends AbstractPage> {
@@ -33,8 +38,7 @@ public class AbstractSeleniumTest<T extends AbstractPage> {
      * @return the element.
      */
     public WebElement waitForDisplayed(final String id) {
-        return new WebDriverWait(this.webDriver, 3)
-                .until(ExpectedConditions.visibilityOf(this.webDriver.findElement(By.id(id))));
+        return new WebDriverWait(this.webDriver, 3).until(visibilityOf(this.webDriver.findElement(By.id(id))));
     }
 
     /**
@@ -44,7 +48,15 @@ public class AbstractSeleniumTest<T extends AbstractPage> {
      * @return the element.
      */
     public WebElement waitForDisplayed(final WebElement element) {
-        return new WebDriverWait(this.webDriver, 3)
-                .until(ExpectedConditions.visibilityOf(element));
+        return new WebDriverWait(this.webDriver, 3).until(visibilityOf(element));
+    }
+
+    /**
+     * Wait for an element to become hidden.
+     *
+     * @param element the element
+     */
+    public void waitForHidden(final WebElement element) {
+        new WebDriverWait(this.webDriver, 3).until(not(visibilityOf(element)));
     }
 }

@@ -1,6 +1,5 @@
 package page;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -9,7 +8,7 @@ import org.openqa.selenium.support.FindBy;
  *
  * Created by Mike on 10/6/2015.
  */
-public class GreetingPage extends AbstractPage<GreetingPage> {
+public class EchoPage extends AbstractPage<EchoPage> {
 
     @FindBy(id = "connect")
     public WebElement connect;
@@ -17,7 +16,7 @@ public class GreetingPage extends AbstractPage<GreetingPage> {
     @FindBy(id = "disconnect")
     public WebElement disconnect;
 
-    @FindBy(id = "name")
-    public WebElement name;
+    @FindBy(id = "message")
+    public WebElement message;
 
 }
