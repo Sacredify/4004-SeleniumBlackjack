@@ -2,6 +2,7 @@ import config.SeleniumTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import page.EchoPage;
+import page.TestPage;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,5 +31,13 @@ public class EchoTest extends AbstractSeleniumTest {
         this.echoPage.disconnect.click();
         this.waitForHidden(this.echoPage.message);
         assertThat(this.echoPage.message.isDisplayed(), is(false));
+    }
+
+    @Test
+    public void canSwitchPagesToTest() throws Exception {
+        final TestPage testPage = this.echoPage.toTestPage();
+        assertThat(testPage.test.isDisplayed(), is(false));
+        testPage.clickMe.click();
+        assertThat(this.waitForDisplayed(testPage.test).isDisplayed(), is(true));
     }
 }

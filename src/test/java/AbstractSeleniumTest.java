@@ -1,18 +1,14 @@
 import ca.carleton.blackjack.BlackJackApplication;
-import config.SeleniumTest;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import page.AbstractPage;
 
-import static org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 
@@ -25,7 +21,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = BlackJackApplication.class, locations = {"/META-INF/applicationContext.xml"})
 @WebIntegrationTest(value = "server.port:8080")
-public abstract class AbstractSeleniumTest<T extends AbstractPage> {
+public abstract class AbstractSeleniumTest {
 
     @Autowired
     protected WebDriver webDriver;
