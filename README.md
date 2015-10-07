@@ -28,7 +28,7 @@ Build the project as above to assemble the stand-alone jar.
 
 Allow the code to run until you see this message:
   
-  `... c.c.blackjack.BlackJackApplication       : Started BlackJackApplication in 4.512 seconds (JVM running for ...)`
+  `... c.c.blackjack.BlackJackApplication       : Started BlackJackApplication in 4.512 seconds`
   
 After that, open any browser and navigate to:
 
