@@ -11,12 +11,22 @@ public class Player {
 
     private final WebSocketSession session;
 
+    private boolean isAdmin;
+
     public Player(final WebSocketSession session) {
         this.session = session;
     }
 
     public boolean isReal() {
         return this.session != null;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(final boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     public WebSocketSession getSession() {

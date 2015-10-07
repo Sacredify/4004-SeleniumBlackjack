@@ -36,19 +36,20 @@ public class BlackJackGame {
      * The game state we're in *
      */
     public static enum State {
+        WAITING_FOR_ADMIN,
         WAITING_FOR_PLAYERS,
         PLAYING
     }
 
     @PostConstruct
     public void init() {
-        players = new HashMap<>();
+        this.players = new HashMap<>();
+        this.gameState = State.WAITING_FOR_ADMIN;
     }
 
-    public void startNewRound(final int numberOfPlayers) {
+    public void openLobby(final int numberOfPlayers) {
         this.roundMaxPlayers = numberOfPlayers;
         this.gameState = State.WAITING_FOR_PLAYERS;
-        players.clear();
         LOG.info("Prepared new blackjack round for {} players.", numberOfPlayers);
     }
 
@@ -63,6 +64,9 @@ public class BlackJackGame {
         return size(this.players) == numberRequired;
     }
 
+    /**
+     * Populate the remaining slots with AI.
+     */
     public void populateAI() {
         final int numberOfAIToAdd = this.roundMaxPlayers == -1 ? 0 : DEFAULT_MAX_PLAYERS - this.roundMaxPlayers;
         for (int i = 0; i < numberOfAIToAdd; i++) {
@@ -88,6 +92,14 @@ public class BlackJackGame {
             return this.players.putIfAbsent(id, new Player(null)) == null;
         } else {
             LOG.info("Adding {} to the game.", session.getId());
+
+            if (size(this.players) == 0) {
+                LOG.info("Setting first player as admin.");
+                final Player admin = new Player(session);
+                admin.setAdmin(true);
+                return this.players.putIfAbsent(session.getId(), admin) == null;
+            }
+
             return this.players.putIfAbsent(session.getId(), new Player(session)) == null;
         }
     }
@@ -125,6 +137,16 @@ public class BlackJackGame {
         return this.players.values().stream()
                 .map(Player::getSession)
                 .collect(toList());
+    }
+
+    /**
+     * Get the player for the given session.
+     *
+     * @param session the session.
+     * @return the player.
+     */
+    public Player getPlayerFor(final WebSocketSession session) {
+        return this.players.get(session.getId());
     }
 
     public boolean isWaitingForPlayers() {

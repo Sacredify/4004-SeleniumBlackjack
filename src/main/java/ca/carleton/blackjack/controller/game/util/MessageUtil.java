@@ -9,10 +9,12 @@ public class MessageUtil {
 
     public static enum Message {
 
-        PLAYER_CONNECTED("Successfully connected to the game with unique id %s."),
-        OTHER_PLAYER_CONNECTED("%s has connected to the game."),
-        PLAYER_DISCONNECTED("Disconnected to the game with unique id %s."),
-        OTHER_PLAYER_DISCONNECTED("%s has disconnected from the game.");
+        PLAYER_CONNECTED("_CONNECTED_Successfully connected to the game with unique id %s."),
+        OTHER_PLAYER_CONNECTED("_OTHER+CONNECTED_%s has connected to the game."),
+        PLAYER_DISCONNECTED("_DISCONNECTED_Disconnected to the game with unique id %s."),
+        OTHER_PLAYER_DISCONNECTED("_OTHER+DISCONNECTED_%s has disconnected from the game."),
+        ADMIN_SET("_ADMIN_You have been designated the admin for this game."),
+        NOT_ACCEPTING("_NOT+ACCEPTING_The game isn't accepting connections at this time.");
 
         private final String content;
 

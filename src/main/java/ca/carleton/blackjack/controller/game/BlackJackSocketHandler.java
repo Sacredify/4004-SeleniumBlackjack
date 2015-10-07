@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import static ca.carleton.blackjack.controller.game.util.MessageUtil.Message;
 import static ca.carleton.blackjack.controller.game.util.MessageUtil.message;
+import static org.apache.commons.collections.CollectionUtils.size;
 
 /**
  * Socket handler that will contain our blackjack controls.
@@ -31,17 +32,37 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     @Autowired
     private BlackJackGame game;
 
+    /**
+     * Whether or not we're accepting connections.
+     */
+    private boolean acceptingConnections;
+
     @PostConstruct
     public void init() {
-        game.startNewRound(2);
+        this.acceptingConnections = true;
     }
 
     @Override
     public void afterConnectionEstablished(final WebSocketSession session) throws Exception {
         LOG.info("Opened new session for {}.", session.getId());
+
+        // For first one - disable after they join
+        if (this.acceptingConnections && size(this.game.getConnectedPlayers()) == 0) {
+            this.acceptingConnections = false;
+        } else if (!this.acceptingConnections) {
+            LOG.warn("Warning: Admin isn't accepting connections yet.");
+            this.sendMessage(session, message(Message.NOT_ACCEPTING).build());
+            return;
+        }
+
         if (this.game.registerPlayer(session)) {
-            sendMessage(session, message(Message.PLAYER_CONNECTED, session.getId()).build());
-            broadCastMessage(session, message(Message.OTHER_PLAYER_CONNECTED, session.getId()).build());
+            this.sendMessage(session, message(Message.PLAYER_CONNECTED, session.getId()).build());
+            this.broadCastMessage(session, message(Message.OTHER_PLAYER_CONNECTED, session.getId()).build());
+
+            if (this.game.getPlayerFor(session).isAdmin()) {
+                LOG.info("Sending admin message to player.");
+                this.sendMessage(session, message(Message.ADMIN_SET).build());
+            }
 
             if (this.game.readyToStart()) {
                 this.game.populateAI();
@@ -55,10 +76,23 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    /**
+     * Called after a session is closed via session.close()
+     *
+     * @param session the session.
+     * @param status  the close status.
+     */
     @Override
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
-        LOG.info("Closing session for {} with status {}.", session, status);
-        broadCastMessage(session, message(Message.OTHER_PLAYER_DISCONNECTED, session.getId()).build());
+        LOG.info("Closing session for {} with status {}.", session.getId(), status);
+
+        if (this.game.deregisterPlayer(session)) {
+            LOG.info("Successfully deregistered session {}.", session.getId());
+        }
+
+        if (this.game.isPlaying()) {
+            this.broadCastMessage(session, message(Message.OTHER_PLAYER_DISCONNECTED, session.getId()).build());
+        }
 
         // Need to deregister any existing AI if we're in a waiting state
         if (this.game.isWaitingForPlayers()) {
@@ -66,8 +100,6 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 LOG.info("Deregistered existing AI.");
             }
         }
-
-        this.closeSession(session, status);
     }
 
     @Override
@@ -80,7 +112,15 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(final WebSocketSession session, final TextMessage message)
             throws Exception {
-        LOG.info(message.getPayload());
+        LOG.info("Received message from {}: {}.", session.getId(), message.getPayload());
+        switch (message.getPayload()) {
+            case "ACCEPT":
+                LOG.info("Now accepting connections.");
+                this.acceptingConnections = true;
+                break;
+            default:
+                break;
+        }
     }
 
     /**
@@ -111,7 +151,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                     try {
                         session.sendMessage(message);
                     } catch (final Exception exception) {
-                        closeSession(session, CloseStatus.PROTOCOL_ERROR);
+                        this.closeSession(session, CloseStatus.PROTOCOL_ERROR);
                     }
                 });
     }
@@ -123,14 +163,22 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      * @param status  the reason why we're closing.
      */
     private void closeSession(final WebSocketSession session, final CloseStatus status) {
-        LOG.info("Removing player and closing session {}.", session.getId());
-        if (this.game.deregisterPlayer(session)) {
-            LOG.info("Successfully deregistered session {}.", session.getId());
-        }
         try {
             session.close(status);
         } catch (final IOException exception) {
             LOG.error("Exception when trying to close session!", exception);
         }
+    }
+
+    private void disconnectUser(final WebSocketSession session) {
+        final Runnable disconnect = () -> {
+            try {
+                Thread.sleep(2000);
+                LOG.warn("Disconnecting {}.", session.getId());
+            } catch (InterruptedException ignored) {
+            }
+            BlackJackSocketHandler.this.closeSession(session, CloseStatus.NOT_ACCEPTABLE);
+        };
+        new Thread(disconnect).run();
     }
 }
