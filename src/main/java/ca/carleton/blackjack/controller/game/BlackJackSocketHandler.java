@@ -33,7 +33,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
 
     @PostConstruct
     public void init() {
-        game.startNewRound(4);
+        game.startNewRound(2);
     }
 
     @Override
@@ -42,6 +42,13 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         if (this.game.registerPlayer(session)) {
             sendMessage(session, message(Message.PLAYER_CONNECTED, session.getId()).build());
             broadCastMessage(session, message(Message.OTHER_PLAYER_CONNECTED, session.getId()).build());
+
+            if (this.game.readyToStart()) {
+                this.game.populateAI();
+                // TODO start game!
+                LOG.info("Starting game!");
+            }
+
         } else {
             // TODO send rejection
             session.close(CloseStatus.NOT_ACCEPTABLE);
@@ -51,12 +58,16 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
         LOG.info("Closing session for {} with status {}.", session, status);
-        if (this.game.deregisterPlayer(session)) {
-            // TODO send confirmation.
-        } else {
-            // We're in an invalid state - how was this called?
-            throw new IllegalStateException("Invalid state! Session should already be destroyed.");
+        broadCastMessage(session, message(Message.OTHER_PLAYER_DISCONNECTED, session.getId()).build());
+
+        // Need to deregister any existing AI if we're in a waiting state
+        if (this.game.isWaitingForPlayers()) {
+            if (this.game.deregisterAI()) {
+                LOG.info("Deregistered existing AI.");
+            }
         }
+
+        this.closeSession(session, status);
     }
 
     @Override
@@ -94,7 +105,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      */
     private void broadCastMessage(final WebSocketSession sender, final TextMessage message) {
         this.game.getConnectedPlayers().stream()
-                .filter(session -> !session.getId().equals(sender.getId()))
+                .filter(session -> session != null && !session.getId().equals(sender.getId()))
                 .forEach(session ->
                 {
                     try {
@@ -112,6 +123,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      * @param status  the reason why we're closing.
      */
     private void closeSession(final WebSocketSession session, final CloseStatus status) {
+        LOG.info("Removing player and closing session {}.", session.getId());
         if (this.game.deregisterPlayer(session)) {
             LOG.info("Successfully deregistered session {}.", session.getId());
         }
