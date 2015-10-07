@@ -1,7 +1,7 @@
 package ca.carleton.blackjack;
 
-import ca.carleton.blackjack.controller.BlackJackSocketHandler;
-import ca.carleton.blackjack.controller.EchoWebSocketHandler;
+import ca.carleton.blackjack.controller.echo.EchoWebSocketHandler;
+import ca.carleton.blackjack.controller.game.BlackJackSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
