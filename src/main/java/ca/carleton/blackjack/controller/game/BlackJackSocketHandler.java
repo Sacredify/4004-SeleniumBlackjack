@@ -1,5 +1,6 @@
 package ca.carleton.blackjack.controller.game;
 
+import ca.carleton.blackjack.session.SessionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     @Autowired
     private BlackJackGame game;
 
+    @Autowired
+    private SessionHandler sessionHandler;
+
     /**
      * Whether or not we're accepting connections.
      */
@@ -50,7 +54,9 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         if (this.acceptingConnections && size(this.game.getConnectedPlayers()) == 0) {
             this.acceptingConnections = false;
         } else if (!this.acceptingConnections) {
+            // TODO this is very dependent on when users may interact, possible race conditions...
             LOG.warn("Warning: Admin isn't accepting connections yet.");
+            this.sessionHandler.registerSessionForDisconnect(session);
             this.sendMessage(session, message(Message.NOT_ACCEPTING).build());
             return;
         }

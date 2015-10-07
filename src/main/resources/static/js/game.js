@@ -76,7 +76,7 @@ function dispatch(message) {
             break;
         case 'NOT+ACCEPTING':
             log(logMessage);
-            disconnect();
+            //disconnect(); for now done by the server...this is the work around
             break;
         case 'ADMIN':
             log(logMessage);

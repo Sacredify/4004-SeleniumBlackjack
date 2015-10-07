@@ -14,7 +14,7 @@ public class MessageUtil {
         PLAYER_DISCONNECTED("_DISCONNECTED_Disconnected to the game with unique id %s."),
         OTHER_PLAYER_DISCONNECTED("_OTHER+DISCONNECTED_%s has disconnected from the game."),
         ADMIN_SET("_ADMIN_You have been designated the admin for this game."),
-        NOT_ACCEPTING("_NOT+ACCEPTING_The game isn't accepting connections at this time.");
+        NOT_ACCEPTING("_NOT+ACCEPTING_The game isn't accepting connections. You will be disconnected.");
 
         private final String content;
 

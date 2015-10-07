@@ -14,7 +14,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 /**
- * Main class - launch the application.
+ * Main class - launch the application and register endpoint handlers.
  *
  * Created by Mike on 10/6/2015.
  */
@@ -37,11 +37,14 @@ public class BlackJackApplication extends SpringBootServletInitializer implement
 
     @Override
     public void registerWebSocketHandlers(final WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(this.echoWebSocketHandler, "/echo").withSockJS();
-        webSocketHandlerRegistry.addHandler(this.blackJackSocketHandler, "/game").withSockJS();
+        webSocketHandlerRegistry.addHandler(this.echoWebSocketHandler, "/echo")
+                .withSockJS();
+        webSocketHandlerRegistry.addHandler(this.blackJackSocketHandler, "/game")
+                .withSockJS();
     }
 
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder springApplicationBuilder) {
         return springApplicationBuilder.sources(BlackJackApplication.class);
     }
+
 }
