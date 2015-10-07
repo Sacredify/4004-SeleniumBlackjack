@@ -19,6 +19,8 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(EchoWebSocketHandler.class);
 
+    private int count = 1;
+
     @Autowired
     private EchoService echoService;
 
@@ -32,7 +34,7 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
             throws Exception {
         final String echoMessage = this.echoService.getMessage(message.getPayload());
         LOG.info(echoMessage);
-        session.sendMessage(new TextMessage(echoMessage));
+        session.sendMessage(new TextMessage(echoMessage + " I have been opened + " + this.count++ + " times."));
     }
 
     @Override
