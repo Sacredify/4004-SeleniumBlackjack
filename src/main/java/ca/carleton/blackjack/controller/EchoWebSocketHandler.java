@@ -26,7 +26,12 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(final WebSocketSession session) {
-        LOG.info("Opened new session for {}", session);
+        LOG.info("Opened new session for {}.", session);
+    }
+
+    @Override
+    public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
+        LOG.info("Closed session for {} with status {}.", session, status);
     }
 
     @Override
