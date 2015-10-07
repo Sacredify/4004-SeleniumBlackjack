@@ -51,7 +51,7 @@
                 log('Info: WebSocket connection opened.');
             };
             ws.onmessage = function (event) {
-                log('Received: ' + event.data);
+                log(event.data);
             };
             ws.onclose = function () {
                 setConnected(false);
@@ -79,7 +79,8 @@
             var console = document.getElementById('console');
             var p = document.createElement('p');
             p.style.wordWrap = 'break-word';
-            p.appendChild(document.createTextNode(message));
+            p.innerHTML = message;
+
             console.appendChild(p);
             while (console.childNodes.length > 25) {
                 console.removeChild(console.firstChild);

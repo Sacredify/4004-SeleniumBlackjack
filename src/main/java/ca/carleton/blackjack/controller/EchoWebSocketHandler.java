@@ -29,8 +29,6 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
 
     private Map<WebSocketSession, Player> players;
 
-    private int count = 1;
-
     @Autowired
     private EchoService echoService;
 
@@ -60,6 +58,7 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
         LOG.info("Closed session for {} with status {}.", session, status);
+        players.remove(session);
     }
 
     @Override
@@ -67,7 +66,17 @@ public class EchoWebSocketHandler extends TextWebSocketHandler {
             throws Exception {
         final String echoMessage = this.echoService.getMessage(message.getPayload());
         LOG.info(echoMessage);
-        session.sendMessage(new TextMessage(echoMessage + " I have been opened + " + this.count++ + " times."));
+        players.keySet().stream()
+                .filter(val -> !session.getId().equals(val.getId()))
+                .forEach(val -> {
+                    try {
+                        val.sendMessage(new TextMessage(String.format("<strong>%s</strong>: %s",
+                                session.getId(),
+                                echoMessage)));
+                    } catch (final IOException exception) {
+                        LOG.error("Unable to send message.", exception);
+                    }
+                });
     }
 
     @Override

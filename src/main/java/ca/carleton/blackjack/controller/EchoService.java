@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class EchoService {
 
     public String getMessage(final String message) {
-        return String.format("Received message: %s!", message);
+        return String.format("%s", message);
     }
 
 }
