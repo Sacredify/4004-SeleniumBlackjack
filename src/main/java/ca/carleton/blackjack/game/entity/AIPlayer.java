@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.controller.game.entity;
+package ca.carleton.blackjack.game.entity;
 
 import org.springframework.web.socket.WebSocketSession;
 

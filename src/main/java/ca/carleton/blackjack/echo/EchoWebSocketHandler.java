@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.controller.echo;
+package ca.carleton.blackjack.echo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

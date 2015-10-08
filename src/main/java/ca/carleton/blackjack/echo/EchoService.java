@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.controller.echo;
+package ca.carleton.blackjack.echo;
 
 import org.springframework.stereotype.Component;
 

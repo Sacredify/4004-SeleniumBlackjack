@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.controller.game.entity;
+package ca.carleton.blackjack.game.entity;
 
 import org.springframework.web.socket.WebSocketSession;
 
@@ -22,7 +22,7 @@ public class Player {
     }
 
     public boolean isAdmin() {
-        return isAdmin;
+        return this.isAdmin;
     }
 
     public void setAdmin(final boolean isAdmin) {

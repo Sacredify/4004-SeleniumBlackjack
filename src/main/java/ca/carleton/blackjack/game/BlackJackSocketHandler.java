@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.controller.game;
+package ca.carleton.blackjack.game;
 
 import ca.carleton.blackjack.session.SessionHandler;
 import org.slf4j.Logger;
@@ -13,8 +13,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 
-import static ca.carleton.blackjack.controller.game.util.MessageUtil.Message;
-import static ca.carleton.blackjack.controller.game.util.MessageUtil.message;
+import static ca.carleton.blackjack.game.util.MessageUtil.Message;
+import static ca.carleton.blackjack.game.util.MessageUtil.message;
 import static org.apache.commons.collections.CollectionUtils.size;
 
 /**

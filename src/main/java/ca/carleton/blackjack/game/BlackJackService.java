@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.controller.game;
+package ca.carleton.blackjack.game;
 
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
-package ca.carleton.blackjack.controller.game;
+package ca.carleton.blackjack.game;
 
-import ca.carleton.blackjack.controller.game.entity.Player;
+import ca.carleton.blackjack.game.entity.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.controller.game.util;
+package ca.carleton.blackjack.game.util;
 
 /**
  * Stores message strings to use across the application.

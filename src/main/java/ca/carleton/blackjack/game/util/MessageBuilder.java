@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.controller.game.util;
+package ca.carleton.blackjack.game.util;
 
 import org.springframework.web.socket.TextMessage;
 
