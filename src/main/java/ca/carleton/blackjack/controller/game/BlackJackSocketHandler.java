@@ -58,6 +58,10 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
             LOG.warn("Warning: Admin isn't accepting connections yet.");
             this.sessionHandler.registerSessionForDisconnect(session);
             this.sendMessage(session, message(Message.NOT_ACCEPTING).build());
+            // Check if we're in 0 state and need to re-open
+            if (size(this.game.getConnectedPlayers()) == 0) {
+                this.acceptingConnections = true;
+            }
             return;
         }
 
@@ -150,6 +154,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      * @param message the message.
      */
     private void broadCastMessage(final WebSocketSession sender, final TextMessage message) {
+        LOG.info("SENDING {} TO {}.", message.getPayload(), this.game.getConnectedPlayers());
         this.game.getConnectedPlayers().stream()
                 .filter(session -> session != null && !session.getId().equals(sender.getId()))
                 .forEach(session ->

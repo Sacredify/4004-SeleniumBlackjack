@@ -21,17 +21,18 @@ function setAdminPrivelege(enabled) {
  * Connect to the server.
  */
 function connect() {
+    // hardcoded endpoint, oh no!
     ws = new SockJS('/game');
     ws.onopen = function () {
         setConnected(true);
-        log('Info: WebSocket connection opened.');
+        clientLog('WebSocket connection opened.');
     };
     ws.onmessage = function (event) {
         dispatch(event.data);
     };
     ws.onclose = function () {
         setConnected(false);
-        log('Info: WebSocket connection closed.');
+        clientLog('WebSocket connection closed.');
     };
 }
 
@@ -71,6 +72,7 @@ function dispatch(message) {
     var logMessage = split[0].concat(split[2]);
     console.log(split);
     switch (split[1]) {
+        case 'OTHER+CONNECTED':
         case 'CONNECTED':
             log(logMessage);
             break;
@@ -86,6 +88,27 @@ function dispatch(message) {
             console.log('Unknown message received');
             break;
     }
+}
+
+/**
+ * Open connections for other players.
+ */
+function acceptOthers() {
+    if (ws != null) {
+        clientLog('Sent connections available command.');
+        ws.send('ACCEPT');
+        document.getElementById('open').disabled = true;
+    } else {
+        alert('WebSocket connection not established, please connect.');
+    }
+}
+
+/**
+ * Log from the client.
+ * @param message the message.
+ */
+function clientLog(message) {
+    log('<strong>Client</strong>: ' + message);
 }
 
 /**
@@ -109,6 +132,7 @@ function log(message) {
  * Shutdown the spring boot server.
  */
 function shutdown() {
+    log('Info: Sent shutdown command.');
     $.post(
         "http://localhost:8080/shutdown",
         null,
