@@ -54,10 +54,9 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         if (this.acceptingConnections && size(this.game.getConnectedPlayers()) == 0) {
             this.acceptingConnections = false;
         } else if (!this.acceptingConnections) {
-            // TODO this is very dependent on when users may interact, possible race conditions...
             LOG.warn("Warning: Admin isn't accepting connections yet.");
-            this.sessionHandler.registerSessionForDisconnect(session);
             this.sendMessage(session, message(Message.NOT_ACCEPTING).build());
+            this.sessionHandler.registerSessionForDisconnect(session);
             // Check if we're in 0 state and need to re-open
             if (size(this.game.getConnectedPlayers()) == 0) {
                 this.acceptingConnections = true;
@@ -81,7 +80,8 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
             }
 
         } else {
-            // TODO send rejection
+            this.sendMessage(session, message(Message.NOT_ACCEPTING).build());
+            this.sessionHandler.registerSessionForDisconnect(session);
             session.close(CloseStatus.NOT_ACCEPTABLE);
         }
     }
