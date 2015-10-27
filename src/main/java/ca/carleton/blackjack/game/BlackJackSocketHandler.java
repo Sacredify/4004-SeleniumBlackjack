@@ -1,5 +1,8 @@
 package ca.carleton.blackjack.game;
 
+import ca.carleton.blackjack.game.entity.card.Card;
+import ca.carleton.blackjack.game.entity.card.Rank;
+import ca.carleton.blackjack.game.entity.card.Suit;
 import ca.carleton.blackjack.session.SessionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +74,11 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
             if (this.game.getPlayerFor(session).isAdmin()) {
                 LOG.info("Sending admin message to player.");
                 this.sendMessage(session, message(Message.ADMIN_SET).build());
+
+                // TEST CARD
+                final Card card = new Card(Rank.EIGHT, Suit.CLUBS);
+                this.sendMessage(session, message(Message.ADD_CARD, card.toHTMLString()).build());
+
             }
 
             if (this.game.readyToStart()) {

@@ -32,6 +32,15 @@
     width: 200%;
 }
 
+#cards {
+    border: 1px solid #CCCCCC;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    height: 170px;
+    padding: 5px;
+    width: 200%;
+}
+
 #console p {
     padding: 0;
     margin: 0;

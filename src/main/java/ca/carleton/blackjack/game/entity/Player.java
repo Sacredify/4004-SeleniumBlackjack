@@ -1,5 +1,6 @@
 package ca.carleton.blackjack.game.entity;
 
+import ca.carleton.blackjack.game.entity.card.Hand;
 import org.springframework.web.socket.WebSocketSession;
 
 /**
@@ -13,8 +14,14 @@ public class Player {
 
     private boolean isAdmin;
 
+    private Hand hand;
+
     public Player(final WebSocketSession session) {
         this.session = session;
+    }
+
+    public Hand getHand() {
+        return this.hand;
     }
 
     public boolean isReal() {

@@ -11,11 +11,10 @@ function setGameOptionsEnabled(enabled) {
     document.getElementById('split').disabled = !enabled;
 }
 
-function setAdminPrivelege(enabled) {
+function setAdmin(enabled) {
     document.getElementById('open').disabled = !enabled;
     document.getElementById('shutdown').disabled = !enabled;
     document.getElementById('numberPlayers').disabled = !enabled;
-    document.getElementById('numberAI').disabled = !enabled;
 }
 
 function enableStart(enabled) {
@@ -59,8 +58,9 @@ function disconnect() {
         ws = null;
     }
     setConnected(false);
-    setAdminPrivelege(false);
+    setAdmin(false);
     enableStart(false);
+    removeCards();
 }
 
 /**
@@ -100,8 +100,11 @@ function dispatch(message) {
             break;
         case 'ADMIN':
             log(logMessage);
-            setAdminPrivelege(true);
+            setAdmin(true);
             enableStart(false);
+            break;
+        case 'ADD+CARD':
+            addCard(split[2]);
             break;
         default:
             console.log('Unknown message received');
@@ -110,19 +113,35 @@ function dispatch(message) {
 }
 
 /**
+ * Add a new card to that shit.
+ */
+function addCard(card) {
+    var li = document.createElement('li');
+    li.innerHTML = card;
+    document.getElementById('hand').appendChild(li);
+}
+
+/**
+ * Remove all cards.
+ */
+function removeCards() {
+    console.log('Emptied cards.');
+    document.getElementById('hand').innerHTML = "";
+}
+
+/**
  * Open connections for other players.
  */
 function acceptOthers() {
     if (ws != null) {
         var numP = document.getElementById('numberPlayers').value;
-        var numAI = document.getElementById('numberAI').value;
 
         clientLog('Opening the lobby with specified settings...');
-        var send = 'ACCEPT_' + numP + "_" + numAI;
+        var send = 'ACCEPT_' + numP;
         ws.send(send);
         document.getElementById('open').disabled = true;
         document.getElementById('numberPlayers').disabled = true;
-        document.getElementById('numberAI').disabled = true;
+        document.getElementById('open').disabled = true;
         enableStart(true);
     } else {
         alert('WebSocket connection not established, please connect.');

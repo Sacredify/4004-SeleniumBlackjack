@@ -15,7 +15,8 @@ public class MessageUtil {
         OTHER_PLAYER_DISCONNECTED("_OTHER+DISCONNECTED_%s has disconnected from the game."),
         ADMIN_SET(
                 "_ADMIN_You have been designated the admin for this game. Enter the number of players/AI and open the lobby."),
-        NOT_ACCEPTING("_NOT+ACCEPTING_The game isn't accepting connections. You will be disconnected.");
+        NOT_ACCEPTING("_NOT+ACCEPTING_The game isn't accepting connections. You will be disconnected."),
+        ADD_CARD("_ADD+CARD_%s");
 
         private final String content;
 
