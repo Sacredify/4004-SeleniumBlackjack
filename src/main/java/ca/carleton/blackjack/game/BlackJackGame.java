@@ -1,5 +1,6 @@
 package ca.carleton.blackjack.game;
 
+import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public class BlackJackGame {
 
     private static final Random random = new Random();
 
-    private static final int DEFAULT_MAX_PLAYERS = 4;
+    private static final int DEFAULT_MAX_PLAYERS = 3;
 
     private int roundMaxPlayers = -1;
 
@@ -48,6 +49,9 @@ public class BlackJackGame {
     }
 
     public void openLobby(final int numberOfPlayers) {
+        if (numberOfPlayers < 1 || numberOfPlayers > 3) {
+            this.roundMaxPlayers = 3;
+        }
         this.roundMaxPlayers = numberOfPlayers;
         this.gameState = State.WAITING_FOR_PLAYERS;
         LOG.info("Prepared new blackjack round for {} players.", numberOfPlayers);
@@ -67,11 +71,13 @@ public class BlackJackGame {
     /**
      * Populate the remaining slots with AI.
      */
-    public void populateAI() {
+    public void registerAI() {
+        // EX: User enters '2' players --> this.roundmax = 2, DEFAULT = 3 ---> ADD 1 AI, need to register Dealer after.
         final int numberOfAIToAdd = this.roundMaxPlayers == -1 ? 0 : DEFAULT_MAX_PLAYERS - this.roundMaxPlayers;
         for (int i = 0; i < numberOfAIToAdd; i++) {
             this.registerPlayer(null);
         }
+        this.registerDealer();
     }
 
     /**
@@ -89,7 +95,7 @@ public class BlackJackGame {
             // TODO need to get actual different values not just random
             final String id = String.format("AI-%d", random.nextInt(10000));
             LOG.info("Adding AI {} to the game.", id);
-            return this.players.putIfAbsent(id, new Player(null)) == null;
+            return this.players.putIfAbsent(id, new AIPlayer(null)) == null;
         } else {
             LOG.info("Adding {} to the game.", session.getId());
 
@@ -102,6 +108,16 @@ public class BlackJackGame {
 
             return this.players.putIfAbsent(session.getId(), new Player(session)) == null;
         }
+    }
+
+    /**
+     * Register the dealer.
+     */
+    public void registerDealer() {
+        final AIPlayer dealer = new AIPlayer(null);
+        dealer.setDealer(true);
+        this.players.putIfAbsent("AI-DEALER", dealer);
+        LOG.info("Added dealer AI player.");
     }
 
     /**

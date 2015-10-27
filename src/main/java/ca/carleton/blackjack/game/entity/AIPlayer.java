@@ -9,7 +9,18 @@ import org.springframework.web.socket.WebSocketSession;
  */
 public class AIPlayer extends Player {
 
+    private boolean dealer;
+
     public AIPlayer(final WebSocketSession session) {
         super(session);
     }
+
+    public boolean isDealer() {
+        return this.dealer;
+    }
+
+    public void setDealer(final boolean dealer) {
+        this.dealer = dealer;
+    }
+
 }

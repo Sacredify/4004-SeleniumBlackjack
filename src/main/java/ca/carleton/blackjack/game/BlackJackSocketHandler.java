@@ -13,8 +13,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 
-import static ca.carleton.blackjack.game.util.MessageUtil.Message;
-import static ca.carleton.blackjack.game.util.MessageUtil.message;
+import static ca.carleton.blackjack.game.message.MessageUtil.Message;
+import static ca.carleton.blackjack.game.message.MessageUtil.message;
 import static org.apache.commons.collections.CollectionUtils.size;
 
 /**
@@ -74,7 +74,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
             }
 
             if (this.game.readyToStart()) {
-                this.game.populateAI();
+                this.game.registerAI();
                 // TODO start game!
                 LOG.info("Starting game!");
             }
@@ -123,10 +123,15 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     public void handleTextMessage(final WebSocketSession session, final TextMessage message)
             throws Exception {
         LOG.info("Received message from {}: {}.", session.getId(), message.getPayload());
-        switch (message.getPayload()) {
+
+        // KEY_EXTRAVALUE1_EXTRAVALUE2
+        final String[] contents = message.getPayload().split("_");
+
+        switch (contents[0]) {
             case "ACCEPT":
                 LOG.info("Now accepting connections.");
                 this.acceptingConnections = true;
+                this.game.openLobby(Integer.parseInt(contents[1]));
                 break;
             default:
                 break;

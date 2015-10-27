@@ -13,10 +13,23 @@ function setGameOptionsEnabled(enabled) {
 
 function setAdminPrivelege(enabled) {
     document.getElementById('open').disabled = !enabled;
-    document.getElementById('start').disabled = !enabled;
     document.getElementById('shutdown').disabled = !enabled;
+    document.getElementById('numberPlayers').disabled = !enabled;
+    document.getElementById('numberAI').disabled = !enabled;
 }
 
+function enableStart(enabled) {
+    document.getElementById('start').disabled = !enabled;
+}
+
+function setUID(uid) {
+    if (uid != null) {
+        var stripped = uid.replace(/\./g, ' ');
+        document.getElementById('consoleText').innerHTML = 'Console (UID: ' + stripped + ')';
+    } else {
+        document.getElementById('consoleText').innerHTML = 'Console';
+    }
+}
 /**
  * Connect to the server.
  */
@@ -32,6 +45,7 @@ function connect() {
     };
     ws.onclose = function () {
         setConnected(false);
+        setUID();
         clientLog('WebSocket connection closed.');
     };
 }
@@ -46,6 +60,7 @@ function disconnect() {
     }
     setConnected(false);
     setAdminPrivelege(false);
+    enableStart(false);
 }
 
 /**
@@ -75,6 +90,9 @@ function dispatch(message) {
         case 'OTHER+CONNECTED':
         case 'CONNECTED':
             log(logMessage);
+            var connectedMessage = logMessage.split(' ');
+            var last = connectedMessage[connectedMessage.length - 1];
+            setUID(last);
             break;
         case 'NOT+ACCEPTING':
             log(logMessage);
@@ -83,6 +101,7 @@ function dispatch(message) {
         case 'ADMIN':
             log(logMessage);
             setAdminPrivelege(true);
+            enableStart(false);
             break;
         default:
             console.log('Unknown message received');
@@ -95,9 +114,16 @@ function dispatch(message) {
  */
 function acceptOthers() {
     if (ws != null) {
-        clientLog('Sent connections available command.');
-        ws.send('ACCEPT');
+        var numP = document.getElementById('numberPlayers').value;
+        var numAI = document.getElementById('numberAI').value;
+
+        clientLog('Opening the lobby with specified settings...');
+        var send = 'ACCEPT_' + numP + "_" + numAI;
+        ws.send(send);
         document.getElementById('open').disabled = true;
+        document.getElementById('numberPlayers').disabled = true;
+        document.getElementById('numberAI').disabled = true;
+        enableStart(true);
     } else {
         alert('WebSocket connection not established, please connect.');
     }
@@ -108,7 +134,15 @@ function acceptOthers() {
  * @param message the message.
  */
 function clientLog(message) {
-    log('<strong>Client</strong>: ' + message);
+    var pad = '00';
+    var date = new Date();
+    var hour = "" + date.getHours();
+    var hourPad = pad.substring(0, pad.length - hour.length) + hour;
+    var min = "" + date.getMinutes();
+    var minPad = pad.substring(0, pad.length - min.length) + min;
+    var hourMin = hourPad + ':' + minPad;
+    var prefix = '<strong>' + hourMin + ' Client' + '</strong>: ';
+    log(prefix + message);
 }
 
 /**
@@ -132,7 +166,7 @@ function log(message) {
  * Shutdown the spring boot server.
  */
 function shutdown() {
-    log('Info: Sent shutdown command.');
+    clientLog('Sent shutdown command.');
     $.post(
         "http://localhost:8080/shutdown",
         null,

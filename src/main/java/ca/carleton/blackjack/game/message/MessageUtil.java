@@ -1,4 +1,4 @@
-package ca.carleton.blackjack.game.util;
+package ca.carleton.blackjack.game.message;
 
 /**
  * Stores message strings to use across the application.
@@ -13,7 +13,8 @@ public class MessageUtil {
         OTHER_PLAYER_CONNECTED("_OTHER+CONNECTED_%s has connected to the game."),
         PLAYER_DISCONNECTED("_DISCONNECTED_Disconnected to the game with unique id %s."),
         OTHER_PLAYER_DISCONNECTED("_OTHER+DISCONNECTED_%s has disconnected from the game."),
-        ADMIN_SET("_ADMIN_You have been designated the admin for this game."),
+        ADMIN_SET(
+                "_ADMIN_You have been designated the admin for this game. Enter the number of players/AI and open the lobby."),
         NOT_ACCEPTING("_NOT+ACCEPTING_The game isn't accepting connections. You will be disconnected.");
 
         private final String content;

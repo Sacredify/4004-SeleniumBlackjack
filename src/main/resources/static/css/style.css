@@ -13,6 +13,15 @@
     width: 300px;
 }
 
+.container {
+    clear: both;
+}
+
+.container input {
+    width: 100%;
+    clear: both;
+}
+
 #console {
     border: 1px solid #CCCCCC;
     border-right-color: #999999;
