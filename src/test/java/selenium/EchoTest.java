@@ -1,8 +1,10 @@
+package selenium;
+
 import config.SeleniumTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import page.EchoPage;
-import page.TestPage;
+import selenium.page.EchoPage;
+import selenium.page.TestPage;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

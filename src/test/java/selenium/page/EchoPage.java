@@ -1,16 +1,18 @@
-package page;
+package selenium.page;
 
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 /**
- * Greeting page used by selenium to model a page.
+ * Greeting selenium.page used by selenium to model a selenium.page.
  *
  * Created by Mike on 10/6/2015.
  */
 @Lazy
+@Component
 public class EchoPage extends AbstractPage<EchoPage> {
 
     @FindBy(id = "connect")
@@ -35,6 +37,6 @@ public class EchoPage extends AbstractPage<EchoPage> {
 
     public TestPage toTestPage() {
         this.testLink.click();
-        return testPage;
+        return this.testPage;
     }
 }

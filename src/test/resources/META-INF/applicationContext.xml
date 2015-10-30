@@ -11,8 +11,8 @@
     <bean id="webDriver" factory-bean="webDriverFactory" factory-method="getWebDriver"
           destroy-method="quit"/>
 
-    <context:component-scan base-package="page">
-        <context:include-filter type="regex" expression="page\..*Page"/>
+    <context:component-scan base-package="selenium.page">
+        <context:include-filter type="regex" expression="selenium.page\..*Page"/>
     </context:component-scan>
 
 </beans>

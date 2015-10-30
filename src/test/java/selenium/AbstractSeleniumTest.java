@@ -1,3 +1,5 @@
+package selenium;
+
 import ca.carleton.blackjack.BlackJackApplication;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;

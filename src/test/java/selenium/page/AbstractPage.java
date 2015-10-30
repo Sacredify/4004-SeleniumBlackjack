@@ -1,4 +1,4 @@
-package page;
+package selenium.page;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a page.
+ * Represents a selenium.page.
  *
  * Created by Mike on 10/6/2015.
  */
@@ -30,7 +30,7 @@ public abstract class AbstractPage<T extends AbstractPage<T>> {
 
     @PostConstruct
     public void init() {
-        LOG.warn("Initializing elements for page {}.", getClass());
+        LOG.warn("Initializing elements for page {}.", this.getClass());
         PageFactory.initElements(this.webDriver, this);
     }
 
