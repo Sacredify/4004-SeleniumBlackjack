@@ -1,5 +1,6 @@
 package ca.carleton.blackjack.game;
 
+import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
 import ca.carleton.blackjack.game.entity.card.Rank;
 import ca.carleton.blackjack.game.entity.card.Suit;
@@ -82,9 +83,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
             }
 
             if (this.game.readyToStart()) {
-                this.game.registerAI();
-                // TODO start game!
-                LOG.info("Starting game!");
+                this.doReadyToStart();
             }
 
         } else {
@@ -106,6 +105,8 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
 
         if (this.game.deregisterPlayer(session)) {
             LOG.info("Successfully deregistered session {}.", session.getId());
+            this.broadCastMessage(session, message(Message.OTHER_PLAYER_DISCONNECTED, session.getId()).build());
+            // TODO Need to rollback state if necessary here.
         }
 
         if (this.game.isPlaying()) {
@@ -133,17 +134,35 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         LOG.info("Received message from {}: {}.", session.getId(), message.getPayload());
 
         // KEY_EXTRAVALUE1_EXTRAVALUE2
-        final String[] contents = message.getPayload().split("_");
+        final String[] contents = message.getPayload().split("\\|");
 
         switch (contents[0]) {
             case "ACCEPT":
                 LOG.info("Now accepting connections.");
                 this.acceptingConnections = true;
                 this.game.openLobby(Integer.parseInt(contents[1]));
+
+                // Case where we're playing with 1 person - need to start right away.
+                if (this.game.readyToStart()) {
+                    this.doReadyToStart();
+                }
+
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * When we're ready to start - register the AI and send the messages.
+     */
+    private void doReadyToStart() {
+        this.game.registerAI();
+        LOG.info("Game is now ready to start - sending message!");
+        final Player admin = this.game.getAdmin();
+        this.sendMessage(admin.getSession(), message(Message.READY_TO_START).build());
+        this.broadCastMessage(admin.getSession(),
+                message(Message.OTHER_READY_TO_START, admin.getSession().getId()).build());
     }
 
     /**
@@ -168,8 +187,9 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      */
     private void broadCastMessage(final WebSocketSession sender, final TextMessage message) {
         LOG.info("SENDING {} TO {}.", message.getPayload(), this.game.getConnectedPlayers());
-        this.game.getConnectedPlayers().stream()
-                .filter(session -> session != null && !session.getId().equals(sender.getId()))
+        this.game.getConnectedRealPlayers().stream()
+                .map(Player::getSession)
+                .filter(session -> !session.getId().equals(sender.getId()))
                 .forEach(session ->
                 {
                     try {
@@ -194,15 +214,4 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void disconnectUser(final WebSocketSession session) {
-        final Runnable disconnect = () -> {
-            try {
-                Thread.sleep(2000);
-                LOG.warn("Disconnecting {}.", session.getId());
-            } catch (InterruptedException ignored) {
-            }
-            BlackJackSocketHandler.this.closeSession(session, CloseStatus.NOT_ACCEPTABLE);
-        };
-        new Thread(disconnect).run();
-    }
 }

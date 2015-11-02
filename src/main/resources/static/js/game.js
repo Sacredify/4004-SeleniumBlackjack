@@ -83,16 +83,20 @@ function echo() {
  */
 function dispatch(message) {
     // split message into three: [SENDER, KEY, PAYLOAD]
-    var split = message.split('_');
+    var split = message.split('|');
     var logMessage = split[0].concat(split[2]);
     console.log(split);
     switch (split[1]) {
+        case 'OTHER+DISCONNECTED':
+        case 'OTHER+READY+TO+START':
         case 'OTHER+CONNECTED':
         case 'CONNECTED':
             log(logMessage);
             var connectedMessage = logMessage.split(' ');
             var last = connectedMessage[connectedMessage.length - 1];
-            setUID(last);
+            if (split[1] === 'CONNECTED') {
+                setUID(last);
+            }
             break;
         case 'NOT+ACCEPTING':
             log(logMessage);
@@ -105,6 +109,10 @@ function dispatch(message) {
             break;
         case 'ADD+CARD':
             addCard(split[2]);
+            break;
+        case 'READY+TO+START':
+            log(logMessage);
+            enableStart(true);
             break;
         default:
             console.log('Unknown message received');
@@ -136,13 +144,11 @@ function acceptOthers() {
     if (ws != null) {
         var numP = document.getElementById('numberPlayers').value;
 
-        clientLog('Opening the lobby with specified settings...');
-        var send = 'ACCEPT_' + numP;
+        clientLog('Opening the lobby with specified settings. When the correct number of players have connected, the start button will become available.');
+        var send = 'ACCEPT|' + numP;
         ws.send(send);
         document.getElementById('open').disabled = true;
         document.getElementById('numberPlayers').disabled = true;
-        document.getElementById('open').disabled = true;
-        enableStart(true);
     } else {
         alert('WebSocket connection not established, please connect.');
     }

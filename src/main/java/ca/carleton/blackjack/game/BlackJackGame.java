@@ -9,6 +9,8 @@ import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections.CollectionUtils.size;
@@ -117,7 +119,7 @@ public class BlackJackGame {
         final AIPlayer dealer = new AIPlayer(null);
         dealer.setDealer(true);
         this.players.putIfAbsent("AI-DEALER", dealer);
-        LOG.info("Added dealer AI player.");
+        LOG.info("Added AI-DEALER to the game.");
     }
 
     /**
@@ -145,7 +147,7 @@ public class BlackJackGame {
     }
 
     /**
-     * Get the player sessions connected to this game.
+     * Get the player sessions connected to this game including AI.
      *
      * @return the sessions.
      */
@@ -153,6 +155,39 @@ public class BlackJackGame {
         return this.players.values().stream()
                 .map(Player::getSession)
                 .collect(toList());
+    }
+
+    /**
+     * Get the real players that are connected.
+     *
+     * @return the real players.
+     */
+    public Collection<Player> getConnectedRealPlayers() {
+        return this.players.values().stream()
+                .filter(Player::isReal)
+                .collect(toList());
+    }
+
+    /**
+     * Get the admin from the current list of players.
+     *
+     * @return the admin player.
+     */
+    public Player getAdmin() {
+        return this.players.values().stream()
+                .filter(Player::isAdmin)
+                .collect(uniqueResult());
+    }
+
+    /**
+     * Get the dealer from the current list of players.
+     *
+     * @return the dealer AI.
+     */
+    public Player getDealer() {
+        return this.players.values().stream()
+                .filter(player -> !player.isReal() && ((AIPlayer) player).isDealer())
+                .collect(uniqueResult());
     }
 
     /**
@@ -175,6 +210,18 @@ public class BlackJackGame {
 
     private int getMaxPlayers() {
         return this.roundMaxPlayers != -1 ? this.roundMaxPlayers : DEFAULT_MAX_PLAYERS;
+    }
+
+    public static <T> Collector<T, ?, T> uniqueResult() {
+        return Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                    if (list.size() != 1) {
+                        throw new IllegalStateException();
+                    }
+                    return list.get(0);
+                }
+        );
     }
 
 }

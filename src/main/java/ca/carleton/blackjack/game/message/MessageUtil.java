@@ -9,14 +9,16 @@ public class MessageUtil {
 
     public static enum Message {
 
-        PLAYER_CONNECTED("_CONNECTED_Successfully connected to the game with unique id %s."),
-        OTHER_PLAYER_CONNECTED("_OTHER+CONNECTED_%s has connected to the game."),
-        PLAYER_DISCONNECTED("_DISCONNECTED_Disconnected to the game with unique id %s."),
-        OTHER_PLAYER_DISCONNECTED("_OTHER+DISCONNECTED_%s has disconnected from the game."),
+        PLAYER_CONNECTED("|CONNECTED|Successfully connected to the game with unique id %s."),
+        OTHER_PLAYER_CONNECTED("|OTHER+CONNECTED|%s has connected to the game."),
+        PLAYER_DISCONNECTED("|DISCONNECTED|Disconnected to the game with unique id %s."),
+        OTHER_PLAYER_DISCONNECTED("|OTHER+DISCONNECTED|%s has disconnected from the game."),
         ADMIN_SET(
-                "_ADMIN_You have been designated the admin for this game. Enter the number of players/AI and open the lobby."),
-        NOT_ACCEPTING("_NOT+ACCEPTING_The game isn't accepting connections. You will be disconnected."),
-        ADD_CARD("_ADD+CARD_%s");
+                "|ADMIN|You have been designated the admin for this game. Enter the number of players/AI and open the lobby."),
+        NOT_ACCEPTING("|NOT+ACCEPTING|The game isn't accepting connections. You will be disconnected."),
+        ADD_CARD("|ADD+CARD|%s"),
+        READY_TO_START("|READY+TO+START|The game is now ready to begin. Press start when ready."),
+        OTHER_READY_TO_START("|OTHER+READY+TO+START|The game is now ready to begin. Waiting on admin to start.");
 
         private final String content;
 
