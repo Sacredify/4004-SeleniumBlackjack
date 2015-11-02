@@ -7,6 +7,9 @@ import cucumber.api.java.en.When;
 
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
 public class TestStepDefs {
 
     @Given(".+book with the title '(.+)', written by '(.+)', published in (.+)")
@@ -24,5 +27,6 @@ public class TestStepDefs {
 
     @Then("Book (\\d+) should have the title '(.+)'$")
     public void verifyBookAtPosition(final int position, final String title) {
+        assertThat(true, is(false));
     }
 }

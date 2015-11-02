@@ -1,5 +1,6 @@
 package cucumber.feature;
 
+import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
 import org.junit.runner.RunWith;
 
@@ -9,5 +10,6 @@ import org.junit.runner.RunWith;
  * Created by Mike on 10/30/2015.
  */
 @RunWith(Cucumber.class)
-public class TestTest {
+@CucumberOptions(format = {"pretty"})
+public class CucumberTests {
 }
