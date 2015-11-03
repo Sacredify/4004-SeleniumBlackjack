@@ -18,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 /**
- * Step definitions for our AI logic testing.
+ * Step definitions for our AI logic testing - split hand.
  * <p/>
  * Created by Mike on 11/3/2015.
  */
@@ -39,7 +39,7 @@ public class AISplitStepDefs {
 
     @When("^it is the AI's turn to make a move")
     public void prepareTurn() {
-        // Nothing to do
+        // Nothing to do - this is a networking portion.
     }
 
     @Then("the AI should split their hand")
