@@ -26,7 +26,7 @@ public enum Rank {
 
     private final int value;
 
-    private String html;
+    private final String html;
 
     Rank(final int value, final String html) {
         this.value = value;

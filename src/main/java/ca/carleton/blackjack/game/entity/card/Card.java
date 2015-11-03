@@ -20,6 +20,12 @@ public class Card {
     }
 
     @Override
+    public boolean equals(final Object rhs) {
+        return rhs instanceof Card && ((Card) rhs).getRank() == this.rank && ((Card) rhs).getSuit() == this.suit;
+    }
+
+
+    @Override
     public String toString() {
         return this.rank + " of " + this.suit;
     }

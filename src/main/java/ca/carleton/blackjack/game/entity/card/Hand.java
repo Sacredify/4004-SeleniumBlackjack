@@ -38,4 +38,18 @@ public class Hand {
                 .map(card -> card.getRank().getValue())
                 .collect(Collectors.counting());
     }
+
+    @Override
+    public boolean equals(final Object rhs) {
+        if (rhs instanceof Hand) {
+            for (final Card otherCard : ((Hand) rhs).getCards()) {
+                if (!this.cards.contains(otherCard)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
 }

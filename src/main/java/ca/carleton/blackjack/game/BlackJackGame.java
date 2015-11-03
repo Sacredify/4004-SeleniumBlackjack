@@ -2,18 +2,23 @@ package ca.carleton.blackjack.game;
 
 import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
+import ca.carleton.blackjack.game.entity.card.Card;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections.CollectionUtils.size;
+import static org.apache.commons.collections.MapUtils.isNotEmpty;
 
 /**
  * Model class for the game.
@@ -25,15 +30,21 @@ public class BlackJackGame {
 
     private static final Logger LOG = LoggerFactory.getLogger(BlackJackGame.class);
 
-    private static final Random random = new Random();
-
     private static final int DEFAULT_MAX_PLAYERS = 3;
+
+    private final AtomicInteger counter = new AtomicInteger(1243512);
 
     private int roundMaxPlayers = -1;
 
     private State gameState;
 
     private Map<String, Player> players;
+
+    @Autowired
+    private Deck deck;
+
+    @Autowired
+    private BlackJackService blackJackService;
 
     /**
      * The game state we're in *
@@ -95,7 +106,8 @@ public class BlackJackGame {
         }
         if (session == null) {
             // TODO need to get actual different values not just random
-            final String id = String.format("AI-%d", random.nextInt(10000));
+            final int next = this.counter.incrementAndGet();
+            final String id = String.format("AI-%d", next);
             LOG.info("Adding AI {} to the game.", id);
             return this.players.putIfAbsent(id, new AIPlayer(null)) == null;
         } else {
@@ -144,6 +156,63 @@ public class BlackJackGame {
                 .collect(toList());
         aiIds.forEach(this.players::remove);
         return size(aiIds) != 0;
+    }
+
+    /**
+     * Perform the turn for the AI.
+     *
+     * @param ai the ai.
+     */
+    public void doAITurn(final AIPlayer ai) {
+        final GameOption option;
+        if (ai.isDealer()) {
+            option = this.blackJackService.getDealerOption(ai);
+        } else {
+            option = this.blackJackService.getAIOption(ai, this.getAllPlayersExceptFor(ai));
+        }
+        LOG.info("{} will be using option {}!", ai, option);
+        this.performOption(ai, option);
+    }
+
+    /**
+     * Perform the option the user selected.
+     *
+     * @param player the player.
+     * @param option the option.
+     */
+    public void performOption(@NotNull final Player player, @NotNull final GameOption option) {
+        switch (option) {
+            case SPLIT:
+                // TODO
+                break;
+            case HIT:
+                final Card drawn = this.deck.draw();
+                if (drawn != null) {
+                    player.getHand().addCard(drawn);
+                } else {
+                    LOG.warn("No cards remaining! {} tried to hit.", player.getSession());
+                }
+                break;
+            case STAY:
+                return;
+            default:
+                throw new IllegalArgumentException("No valid argument passed to execute option.");
+        }
+        player.setLastOption(option);
+    }
+
+    /**
+     * Get all the players except the one listed.
+     *
+     * @param exclude the player to exclude.
+     * @return the list of players, or empty.
+     */
+    public List<Player> getAllPlayersExceptFor(final Player exclude) {
+        return isNotEmpty(this.players) ? this.players.values()
+                .stream()
+                .filter(player -> !player.equals(exclude))
+                .collect(
+                        Collectors.toList()) : Collections.emptyList();
     }
 
     /**
@@ -206,10 +275,6 @@ public class BlackJackGame {
 
     public boolean isPlaying() {
         return this.gameState == State.PLAYING;
-    }
-
-    private int getMaxPlayers() {
-        return this.roundMaxPlayers != -1 ? this.roundMaxPlayers : DEFAULT_MAX_PLAYERS;
     }
 
     public static <T> Collector<T, ?, T> uniqueResult() {

@@ -51,4 +51,10 @@ public class Player {
     public void setLastOption(final GameOption lastOption) {
         this.lastOption = lastOption;
     }
+
+    // TODO this should be based off UID, not card values.
+    @Override
+    public boolean equals(final Object rhs) {
+        return rhs instanceof Player && ((Player) rhs).getHand().equals(this.hand);
+    }
 }
