@@ -221,9 +221,19 @@ public class BlackJackGame {
      *
      * @return the sessions.
      */
-    public Collection<WebSocketSession> getConnectedPlayers() {
+    public Collection<WebSocketSession> getConnectedPlayerSessions() {
         return this.players.values().stream()
                 .map(Player::getSession)
+                .collect(toList());
+    }
+
+    /**
+     * Get the player sessions connected to this game including AI.
+     *
+     * @return the sessions.
+     */
+    public List<Player> getConnectedPlayers() {
+        return this.players.values().stream()
                 .collect(toList());
     }
 

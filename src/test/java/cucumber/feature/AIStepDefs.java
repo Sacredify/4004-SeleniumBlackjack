@@ -4,6 +4,7 @@ import ca.carleton.blackjack.BlackJackApplication;
 import ca.carleton.blackjack.game.BlackJackGame;
 import ca.carleton.blackjack.game.GameOption;
 import ca.carleton.blackjack.game.entity.AIPlayer;
+import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
 import ca.carleton.blackjack.game.entity.card.Rank;
 import ca.carleton.blackjack.game.entity.card.Suit;
@@ -26,6 +27,8 @@ public class AIStepDefs {
 
     private final AIPlayer ai = new AIPlayer(null);
 
+    private Player otherPlayer;
+
     private int numberOfCards;
 
     @Autowired
@@ -36,23 +39,45 @@ public class AIStepDefs {
         this.ai.getHand().addCard(new Card(rank, suit, visibility));
     }
 
+    @Given(".+player with two cards in their hand consisting of '(.+)' of '(.+)', visibility '(.+)' and '(.+)' of '(.+)', visibility '(.+)'")
+    public void addPlayerWithCards(final Rank rank, final Suit suit, final boolean visibility,
+                                   final Rank rank2, final Suit suit2, final boolean visibility2) {
+        this.blackJackGame.registerPlayer(null);
+        // HACK but we only add 1 other player in the rest so it should work.
+        this.otherPlayer = this.blackJackGame.getConnectedPlayers().get(0);
+        this.otherPlayer.getHand().addCard(new Card(rank, suit, visibility));
+        this.otherPlayer.getHand().addCard(new Card(rank2, suit2, visibility2));
+        this.otherPlayer.setLastOption(GameOption.STAY);
+    }
+
     @When("^it is the AI's turn to make a move")
     public void prepareTurn() {
         this.numberOfCards = this.ai.getHand().getCards().size();
+        ;
     }
 
-    @Then("the AI should split their hand")
+    @Then("the AI should perform their turn")
     public void getOption() {
         this.blackJackGame.doAITurn(this.ai);
     }
 
     @Then("the AI's last move should be '(.+)'")
-    public void verify(final GameOption gameOption) {
+    public void verifyLastMove(final GameOption gameOption) {
         assertThat(this.ai.getLastOption(), is(gameOption));
     }
 
+    @Then("the other player's last move should be '(.+)'")
+    public void verifyLastMoveOtherPlayer(final GameOption gameOption) {
+        assertThat(this.otherPlayer.getLastOption(), is(gameOption));
+    }
+
+    @Then("the AI's hand should have one more card than before")
+    public void verifyHandSizeChanged() {
+        assertThat(this.numberOfCards + 1, is(this.ai.getHand().getCards().size()));
+    }
+
     @Then("the AI's hand size should remained unchanged")
-    public void verifyHandSize() {
+    public void verifyHandSizeUnchanged() {
         assertThat(this.numberOfCards, is(this.ai.getHand().getCards().size()));
     }
 

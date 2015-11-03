@@ -186,7 +186,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      * @param message the message.
      */
     private void broadCastMessage(final WebSocketSession sender, final TextMessage message) {
-        LOG.info("SENDING {} TO {}.", message.getPayload(), this.game.getConnectedPlayers());
+        LOG.info("SENDING {} TO {}.", message.getPayload(), this.game.getConnectedPlayerSessions());
         this.game.getConnectedRealPlayers().stream()
                 .map(Player::getSession)
                 .filter(session -> !session.getId().equals(sender.getId()))
