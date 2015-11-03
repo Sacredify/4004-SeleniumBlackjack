@@ -16,3 +16,27 @@ Feature: Dealer
     Then the dealer should perform their turn
     And the dealer's last move should be 'STAY'
     And the dealer's hand should have the same number of cards
+
+  Scenario: Dealer should hit if their hand value totals 17 and they have an ace
+    Given a card in the dealer's hand with the rank 'SIX' and suit 'DIAMONDS' and visibility 'true'
+    And another card in the dealer's hand with the rank 'ACE_HIGH' and suit 'HEARTS' and visibility 'false'
+    When it is the dealer's turn to make a move
+    Then the dealer should perform their turn
+    And the dealer's last move should be 'HIT'
+    And the dealer's hand should have one more card than before
+
+  Scenario: Dealer should hit in all other scenarios
+    Given a card in the dealer's hand with the rank 'TWO' and suit 'DIAMONDS' and visibility 'true'
+    And another card in the dealer's hand with the rank 'THREE' and suit 'HEARTS' and visibility 'false'
+    When it is the dealer's turn to make a move
+    Then the dealer should perform their turn
+    And the dealer's last move should be 'HIT'
+    And the dealer's hand should have one more card than before
+
+  Scenario: Dealer should hit in all other scenarios
+    Given a card in the dealer's hand with the rank 'TEN' and suit 'DIAMONDS' and visibility 'true'
+    And another card in the dealer's hand with the rank 'TEN' and suit 'HEARTS' and visibility 'false'
+    When it is the dealer's turn to make a move
+    Then the dealer should perform their turn
+    And the dealer's last move should be 'HIT'
+    And the dealer's hand should have one more card than before
