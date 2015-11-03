@@ -77,7 +77,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 this.sendMessage(session, message(Message.ADMIN_SET).build());
 
                 // TEST CARD
-                final Card card = new Card(Rank.EIGHT, Suit.CLUBS);
+                final Card card = new Card(Rank.EIGHT, Suit.CLUBS, true);
                 this.sendMessage(session, message(Message.ADD_CARD, card.toHTMLString()).build());
 
             }

@@ -55,6 +55,7 @@ public class BlackJackService {
      * @return the option they will use for their next move.
      */
     public GameOption getAIOption(final AIPlayer player, final List<Player> otherPlayers) {
+
         if (this.shouldAISplit(player.getHand().getCards())) {
             return GameOption.SPLIT;
         }
