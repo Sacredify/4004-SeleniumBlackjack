@@ -24,7 +24,7 @@ import static org.hamcrest.core.Is.is;
  * Created by Mike on 11/3/2015.
  */
 @SpringApplicationConfiguration(classes = BlackJackApplication.class)
-public class DealerHitStepDefs {
+public class DealerStepDefs {
 
     private AIPlayer dealer;
 
@@ -49,19 +49,23 @@ public class DealerHitStepDefs {
         this.numberOfCards = this.dealer.getHand().getCards().size();
     }
 
-    @Then("the dealer should hit")
+    @Then("the dealer should perform their turn")
     public void getOption() {
         this.blackJackGame.doAITurn(this.dealer);
     }
 
     @Then("the dealer's last move should be '(.+)'")
-    public void verifyHit(final GameOption gameOption) {
+    public void verify(final GameOption gameOption) {
         assertThat(this.dealer.getLastOption(), is(gameOption));
     }
 
     @Then("the dealer's hand should have one more card than before")
-    public void verifyHandSize() {
+    public void verifyHandSizeDifferent() {
         assertThat(this.dealer.getHand().getCards().size(), is(this.numberOfCards + 1));
     }
 
+    @Then("the dealer's hand should have the same number of cards")
+    public void verifyHandSizeSame() {
+        assertThat(this.dealer.getHand().getCards().size(), is(this.numberOfCards));
+    }
 }

@@ -22,7 +22,7 @@ import static org.hamcrest.core.Is.is;
  * Created by Mike on 11/3/2015.
  */
 @SpringApplicationConfiguration(classes = BlackJackApplication.class)
-public class AISplitStepDefs {
+public class AIStepDefs {
 
     private final AIPlayer ai = new AIPlayer(null);
 

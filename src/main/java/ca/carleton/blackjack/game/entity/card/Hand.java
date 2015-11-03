@@ -2,7 +2,6 @@ package ca.carleton.blackjack.game.entity.card;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A Hand that a player has.
@@ -33,10 +32,10 @@ public class Hand {
         return this.handValue() > 21;
     }
 
-    private long handValue() {
+    private int handValue() {
         return this.cards.stream()
-                .map(card -> card.getRank().getValue())
-                .collect(Collectors.counting());
+                .mapToInt(card -> card.getRank().getValue())
+                .sum();
     }
 
     @Override

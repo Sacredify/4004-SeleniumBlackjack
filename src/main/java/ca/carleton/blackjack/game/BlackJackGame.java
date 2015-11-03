@@ -194,7 +194,8 @@ public class BlackJackGame {
                 }
                 break;
             case STAY:
-                return;
+                // Do nothing
+                break;
             default:
                 throw new IllegalArgumentException("No valid argument passed to execute option.");
         }
