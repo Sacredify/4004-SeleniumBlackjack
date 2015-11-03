@@ -11,9 +11,12 @@ public class Card {
 
     private final Suit suit;
 
-    public Card(final Rank rank, final Suit suit) {
+    private boolean hidden;
+
+    public Card(final Rank rank, final Suit suit, final boolean hidden) {
         this.rank = rank;
         this.suit = suit;
+        this.hidden = hidden;
     }
 
     @Override
@@ -38,6 +41,14 @@ public class Card {
                 this.suit.toString().toLowerCase(),
                 this.rank.getValue(),
                 this.suit.toString().toLowerCase());
+    }
+
+    public boolean isHidden() {
+        return this.hidden;
+    }
+
+    public void setHidden(final boolean hidden) {
+        this.hidden = hidden;
     }
 
     public Rank getRank() {

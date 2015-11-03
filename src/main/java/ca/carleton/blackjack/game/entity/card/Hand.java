@@ -17,6 +17,10 @@ public class Hand {
         this.cards.add(card);
     }
 
+    public List<Card> getCards() {
+        return this.cards;
+    }
+
     public void clearHand() {
         this.cards.clear();
     }
