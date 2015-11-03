@@ -32,9 +32,9 @@ public class AISplitStepDefs {
     @Autowired
     private BlackJackService blackJackService;
 
-    @Given(".+card with the rank '(.+)' and visibility '(.+)'")
-    public void addCard(final Rank rank, final boolean visibility) {
-        this.ai.getHand().addCard(new Card(rank, Suit.DIAMONDS, visibility));
+    @Given(".+card with the rank '(.+)' and suit '(.+)' and visibility '(.+)'")
+    public void addCard(final Rank rank, final Suit suit, final boolean visibility) {
+        this.ai.getHand().addCard(new Card(rank, suit, visibility));
     }
 
     @When("^it is the AI's turn to make a move")
