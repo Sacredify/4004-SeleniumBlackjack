@@ -174,7 +174,16 @@ public class BlackJackGame {
             option = this.blackJackService.getAIOption(ai, this.getAllPlayersExceptFor(ai));
         }
         LOG.info("{} will be using option {}!", ai, option);
-        this.performOption(ai, option);
+        this.performOption(ai, option, false);
+
+        // Only do split hand on on the turn after we split.
+        if (option != GameOption.SPLIT) {
+            if (ai.getHand().isSplitHand()) {
+                final GameOption splitOption = this.blackJackService.getAIOption(ai, this.getAllPlayersExceptFor(ai));
+                LOG.info("{} will be using option {} for their split hand!", ai, option);
+                this.performOption(ai, splitOption, true);
+            }
+        }
     }
 
     /**
@@ -183,15 +192,22 @@ public class BlackJackGame {
      * @param player the player.
      * @param option the option.
      */
-    public void performOption(@NotNull final Player player, @NotNull final GameOption option) {
+    public void performOption(@NotNull final Player player, @NotNull final GameOption option, final boolean splitHand) {
         switch (option) {
             case SPLIT:
                 // TODO
+                if (splitHand) {
+                    throw new IllegalStateException("can't split a split hand!");
+                }
                 break;
             case HIT:
                 final Card drawn = this.deck.draw();
                 if (drawn != null) {
-                    player.getHand().addCard(drawn);
+                    if (splitHand) {
+                        player.getHand().addSplitCard(drawn);
+                    } else {
+                        player.getHand().addCard(drawn);
+                    }
                 } else {
                     LOG.warn("No cards remaining! {} tried to hit.", player.getSession());
                 }
