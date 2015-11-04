@@ -12,12 +12,35 @@ public class Hand {
 
     private final List<Card> cards = new ArrayList<>();
 
+    private List<Card> splitCards;
+
+    private boolean splitHand;
+
+    /**
+     * Split the hand into two...dear lord.
+     */
+    public void splitHand() {
+        this.splitCards = new ArrayList<>();
+        this.splitHand = true;
+    }
+
     public void addCard(final Card card) {
         this.cards.add(card);
     }
 
+    public void addSplitCard(final Card card) {
+        if (!this.splitHand) {
+            throw new IllegalStateException("can't add to split hand! We didn't split yet!");
+        }
+        this.splitCards.add(card);
+    }
+
     public List<Card> getCards() {
         return this.cards;
+    }
+
+    public List<Card> getSplitCards() {
+        return this.splitCards;
     }
 
     public void clearHand() {
@@ -30,6 +53,10 @@ public class Hand {
 
     public boolean isBust() {
         return this.handValue() > 21;
+    }
+
+    public boolean isSplitHand() {
+        return this.splitHand;
     }
 
     private int handValue() {
