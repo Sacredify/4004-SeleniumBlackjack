@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -26,6 +28,7 @@ import static org.apache.commons.collections.MapUtils.isNotEmpty;
  * Created by Mike on 10/7/2015.
  */
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BlackJackGame {
 
     private static final Logger LOG = LoggerFactory.getLogger(BlackJackGame.class);

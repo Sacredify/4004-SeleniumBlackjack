@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import static ca.carleton.blackjack.game.BlackJackGame.uniqueResult;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.containsAny;
 
@@ -91,8 +90,8 @@ public class BlackJackService {
                         .filter(card -> !card.isHidden())
                         .collect(Collectors.toList());
                 final int valueOfVisibleCards = (int) (long) visibleCards.stream()
-                        .map(card -> card.getRank().getValue())
-                        .collect(counting());
+                        .mapToInt(card -> card.getRank().getValue())
+                        .sum();
                 if (valueOfVisibleCards > (handValue - 10)) {
                     return GameOption.HIT;
                 }

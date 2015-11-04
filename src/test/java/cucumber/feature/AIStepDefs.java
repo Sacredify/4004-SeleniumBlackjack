@@ -14,7 +14,10 @@ import cucumber.api.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 
+import static org.hamcrest.CoreMatchers.both;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 
 /**
@@ -34,26 +37,34 @@ public class AIStepDefs {
     @Autowired
     private BlackJackGame blackJackGame;
 
-    @Given(".+card in the AI's hand with the rank '(.+)' and suit '(.+)' and visibility '(.+)'")
-    public void addCard(final Rank rank, final Suit suit, final boolean visibility) {
-        this.ai.getHand().addCard(new Card(rank, suit, visibility));
+    @Given(".+card in the AI's hand with the rank '(.+)' and suit '(.+)' and hidden '(.+)'")
+    public void addCard(final Rank rank, final Suit suit, final boolean hidden) {
+        this.ai.getHand().addCard(new Card(rank, suit, hidden));
     }
 
-    @Given(".+player with two cards in their hand consisting of '(.+)' of '(.+)', visibility '(.+)' and '(.+)' of '(.+)', visibility '(.+)'")
-    public void addPlayerWithCards(final Rank rank, final Suit suit, final boolean visibility,
-                                   final Rank rank2, final Suit suit2, final boolean visibility2) {
+    @Given(".+player with two cards in their hand consisting of '(.+)' of '(.+)', hidden '(.+)' and '(.+)' of '(.+)', hidden '(.+)'")
+    public void addPlayerWithCards(final Rank rank, final Suit suit, final boolean hidden,
+                                   final Rank rank2, final Suit suit2, final boolean hidden2) {
         this.blackJackGame.registerPlayer(null);
         // HACK but we only add 1 other player in the rest so it should work.
         this.otherPlayer = this.blackJackGame.getConnectedPlayers().get(0);
-        this.otherPlayer.getHand().addCard(new Card(rank, suit, visibility));
-        this.otherPlayer.getHand().addCard(new Card(rank2, suit2, visibility2));
+        this.otherPlayer.getHand().addCard(new Card(rank, suit, hidden));
+        this.otherPlayer.getHand().addCard(new Card(rank2, suit2, hidden2));
+    }
+
+    @When("the player has decided to stay their turn")
+    public void playerStay() {
         this.otherPlayer.setLastOption(GameOption.STAY);
     }
 
     @When("^it is the AI's turn to make a move")
     public void prepareTurn() {
         this.numberOfCards = this.ai.getHand().getCards().size();
-        ;
+    }
+
+    @Then("the AI should have a hand value of between 18 and 20")
+    public void checkHandSize() {
+        assertThat(this.ai.getHand().getHandValue(), both(greaterThan(17L)).and(lessThan(20L)));
     }
 
     @Then("the AI should perform their turn")
