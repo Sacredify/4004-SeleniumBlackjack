@@ -39,9 +39,9 @@ public class DealerStepDefs {
         this.dealer.setDealer(true);
     }
 
-    @Given(".+card in the dealer's hand with the rank '(.+)' and suit '(.+)' and visibility '(.+)'")
-    public void addCard(final Rank rank, final Suit suit, final boolean visibility) {
-        this.dealer.getHand().addCard(new Card(rank, suit, visibility));
+    @Given(".+card in the dealer's hand with the rank '(.+)' and suit '(.+)' and hidden '(.+)'")
+    public void addCard(final Rank rank, final Suit suit, final boolean hidden) {
+        this.dealer.getHand().addCard(new Card(rank, suit, hidden));
     }
 
     @When("^it is the dealer's turn to make a move")

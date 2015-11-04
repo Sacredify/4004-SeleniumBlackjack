@@ -16,6 +16,8 @@ public class Hand {
 
     private boolean splitHand;
 
+    private HandStatus handStatus;
+
     /**
      * Split the hand into two...dear lord.
      */
@@ -57,6 +59,14 @@ public class Hand {
 
     public boolean isSplitHand() {
         return this.splitHand;
+    }
+
+    public HandStatus getHandStatus() {
+        return this.handStatus;
+    }
+
+    public void setHandStatus(final HandStatus handStatus) {
+        this.handStatus = handStatus;
     }
 
     private int handValue() {

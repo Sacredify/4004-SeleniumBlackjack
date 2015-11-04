@@ -52,7 +52,7 @@ public class BlackJackGame {
     /**
      * The game state we're in *
      */
-    public static enum State {
+    public enum State {
         WAITING_FOR_ADMIN,
         WAITING_FOR_PLAYERS,
         PLAYING
