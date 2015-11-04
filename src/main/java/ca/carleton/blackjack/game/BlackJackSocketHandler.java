@@ -32,9 +32,6 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     private static final Logger LOG = LoggerFactory.getLogger(BlackJackSocketHandler.class);
 
     @Autowired
-    private BlackJackService blackJackService;
-
-    @Autowired
     private BlackJackGame game;
 
     @Autowired
