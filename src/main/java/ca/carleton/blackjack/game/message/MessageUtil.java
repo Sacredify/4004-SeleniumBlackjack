@@ -16,14 +16,21 @@ public class MessageUtil {
         ADMIN_SET(
                 "|ADMIN|You have been designated the admin for this game. Enter the number of players/AI and open the lobby."),
         NOT_ACCEPTING("|NOT+ACCEPTING|The game isn't accepting connections. You will be disconnected."),
-        DEALING_CARDS("|DEALING+CARDS|Displaying cards for round Please wait until it is your turn."),
+        STARTING_GAME("|GAME+START|The game has started! Please wait for your turn."),
+        DEALING_CARDS("|DEALING+CARDS|Updated cards."),
         ADD_PLAYER_CARD("|ADD+PLAYER+CARD|%s"),
         ADD_DEALER_CARD("|ADD+DEALER+CARD|%s"),
         // Send index 0 or 1 so we know which one to fill out, as well as their ID to set.
         ADD_OTHER_PLAYER_CARD("|ADD+OTHER+PLAYER+CARD|%s|%s|%s"),
+        PLAYER_VALUE("|PLAYER+VALUE|%s"),
+        DEALER_VALUE("|DEALER+VALUE|%s"),
+        // index, value
+        OTHER_VALUE("|OTHER+VALUE|%s|%s"),
         READY_TO_START("|READY+TO+START|The game is now ready to begin. Press start when ready."),
         OTHER_READY_TO_START("|OTHER+READY+TO+START|The game is now ready to begin. Waiting on admin to start."),
-        YOUR_TURN("|YOUR+TURN|It is your turn, please select one of the three available game options.");
+        YOUR_TURN("|YOUR+TURN|It is your turn, please select one of the three available game options."),
+        MOVE_MADE("|OTHER+MOVE|%s made their turn and decided to %s."),
+        PROCESSING_AI("|AI+TURN|All real players have made their choices. Now processing AI decisions.");
 
         private final String content;
 

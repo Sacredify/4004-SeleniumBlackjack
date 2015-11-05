@@ -76,3 +76,8 @@
 #info-container {
     font-size: 10px;
 }
+
+label {
+    display: block;
+    width: 400px;
+}

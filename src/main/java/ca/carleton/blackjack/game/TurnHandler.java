@@ -1,7 +1,9 @@
-package ca.carleton.blackjack;
+package ca.carleton.blackjack.game;
 
 import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ import static java.util.Collections.shuffle;
 @Service
 public class TurnHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TurnHandler.class);
+
     private List<Player> ordering;
 
     /**
@@ -30,8 +34,11 @@ public class TurnHandler {
 
         this.ordering = new ArrayList<>();
 
-        // Add real players first
-        final List<Player> realPlayers = players.stream().filter(Player::isReal).collect(Collectors.toList());
+        // Add real players first - excluding the ones that STAYED.
+        final List<Player> realPlayers = players.stream()
+                .filter(Player::isReal)
+                .filter(player -> player.getLastOption() == null || player.getLastOption() != GameOption.STAY)
+                .collect(Collectors.toList());
         shuffle(realPlayers);
         this.ordering.addAll(realPlayers);
 
@@ -40,13 +47,14 @@ public class TurnHandler {
                 .filter(player -> player instanceof AIPlayer && !((AIPlayer) player).isDealer())
                 .collect(Collectors.toList());
         shuffle(aiPlayers);
-        this.ordering.addAll(realPlayers);
+        this.ordering.addAll(aiPlayers);
 
         // Add dealer
         final Player dealer = players.stream()
                 .filter(player -> player instanceof AIPlayer && ((AIPlayer) player).isDealer())
                 .collect(uniqueResult());
         this.ordering.add(dealer);
+        LOG.info("New ordering: {}", this.ordering);
     }
 
     /**

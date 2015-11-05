@@ -67,6 +67,13 @@ public class Hand {
         return this.handValue(false);
     }
 
+    public long getVisibleHandValue() {
+        return this.cards.stream()
+                .filter(card -> !card.isHidden())
+                .mapToInt(card -> card.getRank().getValue())
+                .sum();
+    }
+
     public long getSplitHandValue() {
         return this.handValue(true);
     }

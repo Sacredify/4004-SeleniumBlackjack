@@ -2,6 +2,7 @@ package ca.carleton.blackjack.game;
 
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.session.SessionHandler;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,19 +141,59 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 break;
             case "START_GAME":
                 LOG.info("Starting the game.");
+                this.broadCastMessageFromServer(message(Message.STARTING_GAME).build());
                 this.game.dealInitialHands();
                 // Send each real player their cards.
-                final Map<Player, List<TextMessage>> cardMessages = this.game.buildHandMessages();
-                cardMessages.forEach((player, messages) ->
-                        messages.forEach(toSend -> this.sendMessage(player.getSession(), toSend)));
+                this.updateCards();
                 // Send the first message to the player. Order will be a random of the real players, followed by AI, and then dealer.
                 final Player nextPlayer = this.game.getNextPlayer();
-                LOG.info("Sending YOUR_TURN to {}", this.game.getSessionIdFor(nextPlayer));
-                this.sendMessage(nextPlayer.getSession(), message(Message.YOUR_TURN).build());
+                if (nextPlayer.isReal()) {
+                    this.sendYourTurn(nextPlayer);
+                } else {
+                    throw new NotImplementedException("There should always be at least 1 human player to send to first.");
+                }
+                break;
+            case "GAME_STAY":
+            case "GAME_HIT":
+            case "GAME_SPLIT":
+                final GameOption option = GameOption.valueOf(contents[0].split("_")[1]);
+                final Player player = this.game.getPlayerFor(session);
+                LOG.info("{} has decided to {}.", this.game.getSessionIdFor(player), option);
+                this.game.performOption(player, option);
+                // Send to other than the player what their move was.
+                this.broadCastMessage(session, message(Message.MOVE_MADE, session.getId(), option).build());
+                this.updateCards();
+                final Player next = this.game.getNextPlayer();
+                if (next.isReal()) {
+                    this.sendYourTurn(next);
+                } else {
+                    LOG.info("All real players have gone. Processing AI.");
+                    this.broadCastMessageFromServer(message(Message.PROCESSING_AI).build());
+                }
                 break;
             default:
                 break;
         }
+    }
+
+    /**
+     * Update the cards on the client side.
+     */
+    private void updateCards() {
+        // Send each real player their cards.
+        final Map<Player, List<TextMessage>> cardMessages = this.game.buildHandMessages();
+        cardMessages.forEach((player, messages) ->
+                messages.forEach(toSend -> this.sendMessage(player.getSession(), toSend)));
+    }
+
+    /**
+     * Send 'your turn' to next player.
+     *
+     * @param player the player.
+     */
+    private void sendYourTurn(final Player player) {
+        LOG.info("Sending YOUR_TURN to {}", this.game.getSessionIdFor(player));
+        this.sendMessage(player.getSession(), message(Message.YOUR_TURN).build());
     }
 
     /**
@@ -175,7 +216,6 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      * @param message   the message.
      */
     private void sendMessage(final WebSocketSession recipient, final TextMessage message) {
-        LOG.info("Sending to {}.", this.game.getSessionIdFor(this.game.getPlayerFor(recipient)));
         try {
             recipient.sendMessage(message);
         } catch (final IOException exception) {
@@ -195,6 +235,24 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         this.game.getConnectedRealPlayers().stream()
                 .map(Player::getSession)
                 .filter(session -> !session.getId().equals(sender.getId()))
+                .forEach(session ->
+                {
+                    try {
+                        session.sendMessage(message);
+                    } catch (final Exception exception) {
+                        this.closeSession(session, CloseStatus.PROTOCOL_ERROR);
+                    }
+                });
+    }
+
+    /**
+     * Send a message to every real player connected.
+     *
+     * @param message the message.
+     */
+    private void broadCastMessageFromServer(final TextMessage message) {
+        this.game.getConnectedRealPlayers().stream()
+                .map(Player::getSession)
                 .forEach(session ->
                 {
                     try {

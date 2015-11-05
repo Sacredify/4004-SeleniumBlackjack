@@ -1,6 +1,5 @@
 package ca.carleton.blackjack.game;
 
-import ca.carleton.blackjack.TurnHandler;
 import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
@@ -132,11 +131,16 @@ public class BlackJackGame {
                         }
                     });
 
+            playerMessages.add(message(MessageUtil.Message.PLAYER_VALUE, player.getHand().getHandValue()).build());
+
             // Step 2, build the messages to send the player the dealer's cards.
             this.getDealer().getHand()
                     .getCards()
                     .forEach(card -> playerMessages.add(message(MessageUtil.Message.ADD_DEALER_CARD,
                             card.toHTMLString()).build()));
+
+            playerMessages.add(message(MessageUtil.Message.DEALER_VALUE,
+                    this.getDealer().getHand().getVisibleHandValue()).build());
 
             final List<Player> playersOtherThanCurrent = this.getConnectedPlayers().stream()
                     .filter(other -> !player.equals(other))
@@ -152,8 +156,14 @@ public class BlackJackGame {
                             this.getSessionIdFor(playerOtherThanCurrent))
                             .build());
                 }
+
+                playerMessages.add(message(MessageUtil.Message.OTHER_VALUE,
+                        otherPlayerIndex,
+                        playerOtherThanCurrent.getHand().getVisibleHandValue()).build());
+
                 otherPlayerIndex++;
             }
+
             otherPlayerIndex = 1;
         }
 
@@ -288,6 +298,10 @@ public class BlackJackGame {
      * @param player the player.
      * @param option the option.
      */
+    public void performOption(@NotNull final Player player, @NotNull final GameOption option) {
+        this.performOption(player, option, player.getHand().isSplitHand());
+    }
+
     public void performOption(@NotNull final Player player, @NotNull final GameOption option, final boolean splitHand) {
         switch (option) {
             case SPLIT:
@@ -298,6 +312,7 @@ public class BlackJackGame {
                 break;
             case HIT:
                 final Card drawn = this.deck.draw();
+                LOG.info("Drew {}.", drawn);
                 if (drawn != null) {
                     if (splitHand) {
                         player.getHand().addSplitCard(drawn);

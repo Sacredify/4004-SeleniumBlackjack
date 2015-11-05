@@ -40,14 +40,14 @@ function connect() {
     ws = new SockJS('/game');
     ws.onopen = function () {
         setConnected(true);
-        clientLog('WebSocket connection opened.');
+        clientLog('Connection opened.');
     };
     ws.onmessage = function (event) {
         dispatch(event.data);
     };
     ws.onclose = function () {
         setUID();
-        clientLog('WebSocket connection closed.');
+        clientLog('Connection closed.');
         disconnect();
     };
 }
@@ -62,6 +62,8 @@ function disconnect() {
     }
     setConnected(false);
     setGameOptionsEnabled(false);
+    resetYourText();
+    resetDealerText();
     resetOtherText();
     setAdmin(false);
     enableStart(false);
@@ -99,6 +101,12 @@ function dispatch(message) {
             setAdmin(true);
             enableStart(false);
             break;
+        case 'GAME+START':
+            log(logMessage);
+            break;
+        case 'OTHER+MOVE':
+            log(logMessage);
+            break;
         case 'ADD+PLAYER+CARD':
             addCardForPlayer(split[2]);
             break;
@@ -107,6 +115,15 @@ function dispatch(message) {
             break;
         case 'ADD+OTHER+PLAYER+CARD':
             addCardForOther(split[2], split[3], split[4]);
+            break;
+        case 'PLAYER+VALUE':
+            updatePlayerValue(split[2]);
+            break;
+        case 'DEALER+VALUE':
+            updateDealerValue(split[2]);
+            break;
+        case 'OTHER+VALUE':
+            updateOtherValue(split[2], split[3]);
             break;
         case 'READY+TO+START':
             log(logMessage);
@@ -120,10 +137,23 @@ function dispatch(message) {
             setGameOptionsEnabled(true);
             log(logMessage);
             break;
+        case 'AI+TURN':
+            log(logMessage);
+            break;
         default:
             console.log('Unknown message received');
             break;
     }
+}
+
+/**
+ * Send option chosen back.
+ */
+function game_option(option) {
+    ws.send('GAME_'.concat(option));
+    console.log('Sent ' + option);
+    clientLog('You decided to ' + option + '. Sending to server - please wait for your next turn.');
+    setGameOptionsEnabled(false);
 }
 
 /**
@@ -163,6 +193,34 @@ function addCardForOther(card, id, sessionID) {
     document.getElementById('otherHandText'.concat(id)).innerHTML = "Other Player's Hand (" + sessionID + ")";
 }
 
+function removeOldValue(old) {
+    var split = old.split('~');
+    return split[0];
+}
+
+function updatePlayerValue(value) {
+    var old = removeOldValue(document.getElementById('yourHandText').innerHTML);
+    document.getElementById('yourHandText').innerHTML = old.concat(" ~ Value: ".concat(value));
+}
+
+function updateDealerValue(value) {
+    var old = removeOldValue(document.getElementById('dealerHandText').innerHTML);
+    document.getElementById('dealerHandText').innerHTML = old.concat(" ~ Value: ".concat(value));
+}
+
+function updateOtherValue(index, value) {
+    var old = removeOldValue(document.getElementById('otherHandText'.concat(index)).innerHTML);
+    document.getElementById('otherHandText'.concat(index)).innerHTML = old.concat(" ~ Value: ".concat(value));
+}
+
+function resetYourText() {
+    document.getElementById('yourHandText').innerHTML = "Your Hand";
+}
+
+function resetDealerText() {
+    document.getElementById('dealerHandText').innerHTML = "Dealer's Hand";
+}
+
 function resetOtherText() {
     document.getElementById('otherHandText1').innerHTML = "Other Player's Hand";
     document.getElementById('otherHandText2').innerHTML = "Other Player's Hand";
@@ -192,7 +250,7 @@ function acceptOthers() {
         document.getElementById('open').disabled = true;
         document.getElementById('numberPlayers').disabled = true;
     } else {
-        alert('WebSocket connection not established, please connect.');
+        alert('Connection not established, please connect.');
     }
 }
 

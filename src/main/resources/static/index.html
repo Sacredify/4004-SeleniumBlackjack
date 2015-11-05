@@ -26,13 +26,13 @@
         <div id="game-container">
             Game options:
             <br/>
-            <button id="stay" disabled="disabled" onclick="stay();">
+            <button id="stay" disabled="disabled" onclick="game_option('STAY');">
                 Stay
             </button>
-            <button id="hit" disabled="disabled" onclick="hit();">
+            <button id="hit" disabled="disabled" onclick="game_option('HIT');">
                 Hit
             </button>
-            <button id="split" disabled="disabled" onclick="split();">
+            <button id="split" disabled="disabled" onclick="game_option('SPLIT');">
                 Split
             </button>
         </div>
@@ -48,7 +48,8 @@
         <div id="admin-container2" class="container">
             Administrative:
             <br/>
-            <input id="numberPlayers" placeholder="Number of players" maxlength="1" size="15" disabled="disabled">
+            <input id="numberPlayers" placeholder="Number of players" maxlength="1" size="15" disabled="disabled"
+                   value="1">
         </div>
         <div id="admin-container">
             <button id="open" disabled="disabled" onclick="acceptOthers();">
