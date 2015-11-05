@@ -23,15 +23,6 @@ import static org.springframework.util.CollectionUtils.containsAny;
 public class BlackJackService {
 
     /**
-     * Set the statuses of the given player hands.
-     *
-     * @param players the players.
-     */
-    public void setHandStatuses(final List<Player> players) {
-
-    }
-
-    /**
      * The action the dealer will take according to our game rules.
      *
      * @param dealer the dealer.
@@ -64,7 +55,7 @@ public class BlackJackService {
      */
     public GameOption getAIOption(final AIPlayer player, final List<Player> otherPlayers) {
 
-        if (this.shouldAISplit(player.getHand().getCards())) {
+        if (this.shouldAISplit(player.getHand().getCards()) && !player.getHand().isSplitHand()) {
             return GameOption.SPLIT;
         }
 

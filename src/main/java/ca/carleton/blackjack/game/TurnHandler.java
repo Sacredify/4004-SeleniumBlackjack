@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import static ca.carleton.blackjack.game.BlackJackGame.uniqueResult;
 import static java.util.Collections.shuffle;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 /**
  * Handle the order of the turns.
@@ -30,14 +31,13 @@ public class TurnHandler {
      *
      * @param players the players.
      */
-    public void initiliazeNewRound(final List<Player> players) {
+    public void initializeNewRound(final List<Player> players) {
 
         this.ordering = new ArrayList<>();
 
         // Add real players first - excluding the ones that STAYED.
         final List<Player> realPlayers = players.stream()
                 .filter(Player::isReal)
-                .filter(player -> player.getLastOption() == null || player.getLastOption() != GameOption.STAY)
                 .collect(Collectors.toList());
         shuffle(realPlayers);
         this.ordering.addAll(realPlayers);
@@ -67,6 +67,10 @@ public class TurnHandler {
             throw new IllegalStateException("No players remaining!");
         }
         return this.ordering.remove(0);
+    }
+
+    public boolean isNextPlayerAI() {
+        return !isEmpty(this.ordering) && this.ordering.get(0) instanceof AIPlayer;
     }
 
     /**

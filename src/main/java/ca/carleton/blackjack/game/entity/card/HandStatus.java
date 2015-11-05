@@ -8,5 +8,5 @@ package ca.carleton.blackjack.game.entity.card;
 public enum HandStatus {
     WINNER,
     LOSER,
-    SEVEN_CARD_CHARLIE
+    SEVEN_CARD_CHARLIE,
 }

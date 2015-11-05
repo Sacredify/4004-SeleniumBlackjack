@@ -1,5 +1,6 @@
 package ca.carleton.blackjack.game;
 
+import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.session.SessionHandler;
 import org.apache.commons.lang3.NotImplementedException;
@@ -160,19 +161,108 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 final Player player = this.game.getPlayerFor(session);
                 LOG.info("{} has decided to {}.", this.game.getSessionIdFor(player), option);
                 this.game.performOption(player, option);
+                // Send state update if necessary
+                if (player.getLastOption() == GameOption.BUST) {
+                    this.sendMessage(player.getSession(), message(Message.BUST).build());
+                } else if (player.getLastOption() == GameOption.SEVEN_CARD_CHARLIE) {
+                    this.sendMessage(player.getSession(), message(Message.SEVEN_CARD_CHARLIE).build());
+                    // TODO seven card charlie what do
+                }
                 // Send to other than the player what their move was.
                 this.broadCastMessage(session, message(Message.MOVE_MADE, session.getId(), option).build());
                 this.updateCards();
-                final Player next = this.game.getNextPlayer();
-                if (next.isReal()) {
-                    this.sendYourTurn(next);
-                } else {
-                    LOG.info("All real players have gone. Processing AI.");
-                    this.broadCastMessageFromServer(message(Message.PROCESSING_AI).build());
+                while (true) {
+                    final Player next = this.getNextPlayer();
+                    if (next.isReal()) {
+                        this.sendYourTurn(next);
+                        return;
+                    } else {
+                        this.processAI(next);
+                        this.updateCards();
+                        if (this.game.isGameResolved()) {
+                            LOG.info("No players can make a turn! Set winning statuses and send to clients.");
+                            this.game.resolveRound();
+                            this.sendResults();
+                            // TODO reset all
+                            //this.resetGame();
+                            return;
+                        } else {
+
+                        }
+                    }
                 }
-                break;
             default:
                 break;
+        }
+    }
+
+    /*8
+    Get the next player to go.
+     */
+    private Player getNextPlayer() {
+        Player next = this.game.getNextPlayer();
+        while (next.isReal()) {
+            if (next.getLastOption() == GameOption.STAY) {
+                LOG.info("Skipping {}'s turn because they STAYED.", this.game.getSessionIdFor(next));
+                this.sendMessage(next.getSession(),
+                        message(Message.SKIPPING, this.game.getSessionIdFor(next), GameOption.STAY).build());
+            } else if (next.getLastOption() == GameOption.BUST) {
+                LOG.info("Skipping {}'s turn because they BUSTED.", this.game.getSessionIdFor(next));
+                this.sendMessage(next.getSession(),
+                        message(Message.SKIPPING, this.game.getSessionIdFor(next), GameOption.BUST).build());
+            } else {
+                break;
+            }
+            next = this.game.getNextPlayer();
+        }
+        return next;
+    }
+
+    private void processAI(Player next) {
+        LOG.info("All real players have gone. Processing AI.");
+        this.broadCastMessageFromServer(message(Message.PROCESSING_AI).build());
+        while (!next.isReal()) {
+            LOG.info("Processing for {}", this.game.getSessionIdFor(next));
+            if (next.getLastOption() == GameOption.STAY) {
+                LOG.info("Skipping {}'s turn because they STAYED.", this.game.getSessionIdFor(next));
+                this.broadCastMessageFromServer(message(Message.SKIPPING,
+                        this.game.getSessionIdFor(next),
+                        GameOption.STAY).build());
+            } else if (next.getLastOption() == GameOption.BUST) {
+                LOG.info("Skipping {}'s turn because they BUSTED.", this.game.getSessionIdFor(next));
+                this.broadCastMessageFromServer(message(Message.SKIPPING,
+                        this.game.getSessionIdFor(next),
+                        GameOption.BUST).build());
+            } else {
+                this.game.doAITurn((AIPlayer) next);
+                this.broadCastMessageFromServer(message(Message.MOVE_MADE,
+                        this.game.getSessionIdFor(next),
+                        next.getLastOption()).build());
+            }
+            if (this.game.isNextPlayerAI()) {
+                next = this.game.getNextPlayer();
+            } else {
+                break;
+            }
+        }
+        LOG.info("All AI have done their turn.");
+    }
+
+    private void sendResults() {
+        for (final Player result : this.game.getConnectedPlayers()) {
+            switch (result.getHand().getHandStatus()) {
+                case WINNER:
+                    this.broadCastMessageFromServer(message(Message.WINNER,
+                            this.game.getSessionIdFor(result),
+                            result.getHand().getHandValue()).build());
+                    break;
+                case LOSER:
+                    this.broadCastMessageFromServer(message(Message.LOSER,
+                            this.game.getSessionIdFor(result)).build());
+                    break;
+                default:
+                    throw new IllegalStateException("Only winners or losers here!");
+            }
         }
     }
 

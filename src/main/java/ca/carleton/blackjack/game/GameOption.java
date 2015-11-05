@@ -8,5 +8,7 @@ package ca.carleton.blackjack.game;
 public enum GameOption {
     STAY,
     HIT,
-    SPLIT
+    SPLIT,
+    BUST,
+    SEVEN_CARD_CHARLIE,
 }

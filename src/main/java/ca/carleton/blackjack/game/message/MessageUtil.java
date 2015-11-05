@@ -29,8 +29,13 @@ public class MessageUtil {
         READY_TO_START("|READY+TO+START|The game is now ready to begin. Press start when ready."),
         OTHER_READY_TO_START("|OTHER+READY+TO+START|The game is now ready to begin. Waiting on admin to start."),
         YOUR_TURN("|YOUR+TURN|It is your turn, please select one of the three available game options."),
-        MOVE_MADE("|OTHER+MOVE|%s made their turn and decided to %s."),
-        PROCESSING_AI("|AI+TURN|All real players have made their choices. Now processing AI decisions.");
+        SKIPPING("|SKIP|Skipping %s's turn because they are : %s."),
+        MOVE_MADE("|OTHER+MOVE|%s made their turn and %s."),
+        BUST("|BUST|You busted! Please wait for next round."),
+        SEVEN_CARD_CHARLIE("|SEVEN+CHARLIE|You got a seven card charlie and won!"),
+        PROCESSING_AI("|AI+TURN|All real players have made their choices. Now processing AI decisions."),
+        WINNER("|WINNER|%s won with a score of %s!"),
+        LOSER("|LOSER|%s lost, better luck next time!");
 
         private final String content;
 

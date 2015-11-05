@@ -107,6 +107,12 @@ function dispatch(message) {
         case 'OTHER+MOVE':
             log(logMessage);
             break;
+        case 'BUST':
+            log(logMessage);
+            break;
+        case 'SKIP':
+            log(logMessage);
+            break;
         case 'ADD+PLAYER+CARD':
             addCardForPlayer(split[2]);
             break;
@@ -138,6 +144,12 @@ function dispatch(message) {
             log(logMessage);
             break;
         case 'AI+TURN':
+            log(logMessage);
+            break;
+        case 'WINNER':
+            log(logMessage);
+            break;
+        case 'LOSER':
             log(logMessage);
             break;
         default:
