@@ -42,3 +42,13 @@ Running the tests (selenium) is best done through maven:
   `mvn clean test`
   
 Tests aren't run as part of the build process, although they are compiled for errors.
+
+IMPORTING AND RUNNING WITH ECLIPSE (Eclipse Mars)
+----------------------
+
+For the eclipse users, you can:
+
+  1. `git clone https://github.com/Sacredify/4004-SeleniumBlackjack.git`
+  2. `File --> Import --> Maven --> Import existing maven projects --> 4004-SeleniumBlackjack --> pom.xml selected.
+  3. From there, you can do whatever. Select the main class (BlackJackApplication) and run (as application).
+  4. To run the tests, you can right click src/test/java/ and do run as JUnit which will run both selenium (allow the browser to do its thing, or switch to PhantomJS) and cucumber tests. 
