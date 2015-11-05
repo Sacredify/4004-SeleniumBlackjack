@@ -46,9 +46,9 @@ function connect() {
         dispatch(event.data);
     };
     ws.onclose = function () {
-        setConnected(false);
         setUID();
         clientLog('WebSocket connection closed.');
+        disconnect();
     };
 }
 
@@ -61,6 +61,8 @@ function disconnect() {
         ws = null;
     }
     setConnected(false);
+    setGameOptionsEnabled(false);
+    resetOtherText();
     setAdmin(false);
     enableStart(false);
     removeCards();
@@ -114,6 +116,10 @@ function dispatch(message) {
             removeCards();
             log(logMessage);
             break;
+        case 'YOUR+TURN':
+            setGameOptionsEnabled(true);
+            log(logMessage);
+            break;
         default:
             console.log('Unknown message received');
             break;
@@ -155,6 +161,11 @@ function addCardForOther(card, id, sessionID) {
     console.log('Trying to append to ' + 'otherHandCards'.concat(id));
     document.getElementById('otherHandCards'.concat(id)).appendChild(li);
     document.getElementById('otherHandText'.concat(id)).innerHTML = "Other Player's Hand (" + sessionID + ")";
+}
+
+function resetOtherText() {
+    document.getElementById('otherHandText1').innerHTML = "Other Player's Hand";
+    document.getElementById('otherHandText2').innerHTML = "Other Player's Hand";
 }
 
 /**

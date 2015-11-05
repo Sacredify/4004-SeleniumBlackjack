@@ -1,5 +1,6 @@
 package ca.carleton.blackjack.game;
 
+import ca.carleton.blackjack.TurnHandler;
 import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
@@ -50,12 +51,43 @@ public class BlackJackGame {
     private Deck deck;
 
     @Autowired
+    private TurnHandler turnHandler;
+
+    @Autowired
     private BlackJackService blackJackService;
+
+    /**
+     * The game state we're in *
+     */
+    public enum State {
+        WAITING_FOR_ADMIN,
+        WAITING_FOR_PLAYERS,
+        PLAYING
+    }
+
+    @PostConstruct
+    public void init() {
+        this.players = new HashMap<>();
+        this.gameState = State.WAITING_FOR_ADMIN;
+    }
+
+    /**
+     * Get the next player to go.
+     *
+     * @return the player.
+     */
+    public Player getNextPlayer() {
+        if (this.turnHandler.requiresReInitialization()) {
+            this.turnHandler.initiliazeNewRound(this.getConnectedPlayers());
+        }
+        return this.turnHandler.getNextPlayer();
+    }
 
     /**
      * Start the game by dealing out the initial round of cards.
      */
     public void dealInitialHands() {
+        this.gameState = State.PLAYING;
         this.players.forEach((uid, player) -> {
             final Card hiddenCard = this.deck.draw();
             hiddenCard.setHidden(true);
@@ -126,21 +158,6 @@ public class BlackJackGame {
         }
 
         return messages;
-    }
-
-    /**
-     * The game state we're in *
-     */
-    public enum State {
-        WAITING_FOR_ADMIN,
-        WAITING_FOR_PLAYERS,
-        PLAYING
-    }
-
-    @PostConstruct
-    public void init() {
-        this.players = new HashMap<>();
-        this.gameState = State.WAITING_FOR_ADMIN;
     }
 
     public void openLobby(final int numberOfPlayers) {

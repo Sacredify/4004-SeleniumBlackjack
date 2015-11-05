@@ -145,7 +145,11 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 final Map<Player, List<TextMessage>> cardMessages = this.game.buildHandMessages();
                 cardMessages.forEach((player, messages) ->
                         messages.forEach(toSend -> this.sendMessage(player.getSession(), toSend)));
-
+                // Send the first message to the player. Order will be a random of the real players, followed by AI, and then dealer.
+                final Player nextPlayer = this.game.getNextPlayer();
+                LOG.info("Sending YOUR_TURN to {}", this.game.getSessionIdFor(nextPlayer));
+                this.sendMessage(nextPlayer.getSession(), message(Message.YOUR_TURN).build());
+                break;
             default:
                 break;
         }
@@ -171,9 +175,11 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      * @param message   the message.
      */
     private void sendMessage(final WebSocketSession recipient, final TextMessage message) {
+        LOG.info("Sending to {}.", this.game.getSessionIdFor(this.game.getPlayerFor(recipient)));
         try {
             recipient.sendMessage(message);
         } catch (final IOException exception) {
+            LOG.error("Error sending a message.", exception);
             this.closeSession(recipient, CloseStatus.PROTOCOL_ERROR);
         }
     }

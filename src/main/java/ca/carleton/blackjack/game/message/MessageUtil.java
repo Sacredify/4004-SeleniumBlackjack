@@ -22,7 +22,8 @@ public class MessageUtil {
         // Send index 0 or 1 so we know which one to fill out, as well as their ID to set.
         ADD_OTHER_PLAYER_CARD("|ADD+OTHER+PLAYER+CARD|%s|%s|%s"),
         READY_TO_START("|READY+TO+START|The game is now ready to begin. Press start when ready."),
-        OTHER_READY_TO_START("|OTHER+READY+TO+START|The game is now ready to begin. Waiting on admin to start.");
+        OTHER_READY_TO_START("|OTHER+READY+TO+START|The game is now ready to begin. Waiting on admin to start."),
+        YOUR_TURN("|YOUR+TURN|It is your turn, please select one of the three available game options.");
 
         private final String content;
 
