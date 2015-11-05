@@ -72,6 +72,19 @@ public class BlackJackGame {
     }
 
     /**
+     * Reset for another round.
+     */
+    public void resetRound() {
+        for (final Player player : this.getConnectedPlayers()) {
+            player.getHand().clearHand();
+            player.getHand().setHandStatus(null);
+            player.setLastOption(null);
+            LOG.info("Reset {}'s state.", this.getSessionIdFor(player));
+        }
+        this.setGameState(State.WAITING_FOR_PLAYERS);
+    }
+
+    /**
      * Get the next player to go.
      *
      * @return the player.

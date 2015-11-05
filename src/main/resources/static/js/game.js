@@ -152,6 +152,15 @@ function dispatch(message) {
         case 'LOSER':
             log(logMessage);
             break;
+        case 'RESET':
+            log(logMessage);
+            setGameOptionsEnabled(false);
+            break;
+        case 'RESET+ADMIN':
+            log(logMessage);
+            setGameOptionsEnabled(false);
+            enableStart(true);
+            break;
         default:
             console.log('Unknown message received');
             break;
@@ -174,6 +183,7 @@ function game_option(option) {
 function start() {
     ws.send('START_GAME');
     enableStart(false);
+    removeCards();
 }
 
 /**

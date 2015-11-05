@@ -183,11 +183,8 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                             LOG.info("No players can make a turn! Set winning statuses and send to clients.");
                             this.game.resolveRound();
                             this.sendResults();
-                            // TODO reset all
-                            //this.resetGame();
+                            this.resetGame();
                             return;
-                        } else {
-
                         }
                     }
                 }
@@ -196,8 +193,21 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    /*8
-    Get the next player to go.
+    /**
+     * Reset the state of the game.
+     */
+    private void resetGame() {
+        final Player admin = this.game.getAdmin();
+        this.game.getConnectedRealPlayers().stream()
+                .filter(player -> !player.equals(admin))
+                .forEach(player -> this.sendMessage(player.getSession(), message(Message.RESET).build()));
+        this.sendMessage(admin.getSession(), message(Message.RESET_ADMIN).build());
+        this.game.resetRound();
+        LOG.info("Reset round - waiting for admin message.");
+    }
+
+    /**
+     * Get the next player to go.
      */
     private Player getNextPlayer() {
         Player next = this.game.getNextPlayer();
@@ -249,6 +259,11 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     }
 
     private void sendResults() {
+        // Send cards again but show them all just in case.
+        for (final Player player : this.game.getConnectedPlayers()) {
+            this.game.revealCards(player);
+        }
+        this.updateCards();
         for (final Player result : this.game.getConnectedPlayers()) {
             switch (result.getHand().getHandStatus()) {
                 case WINNER:

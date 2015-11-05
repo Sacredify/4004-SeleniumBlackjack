@@ -35,7 +35,9 @@ public class MessageUtil {
         SEVEN_CARD_CHARLIE("|SEVEN+CHARLIE|You got a seven card charlie and won!"),
         PROCESSING_AI("|AI+TURN|All real players have made their choices. Now processing AI decisions."),
         WINNER("|WINNER|%s won with a score of %s!"),
-        LOSER("|LOSER|%s lost, better luck next time!");
+        LOSER("|LOSER|%s lost, better luck next time!"),
+        RESET("|RESET|Please wait for the administrator to start the next round."),
+        RESET_ADMIN("|RESET+ADMIN|To start another round, press the start button.");
 
         private final String content;
 
