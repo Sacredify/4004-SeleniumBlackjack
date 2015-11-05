@@ -3,6 +3,7 @@ package ca.carleton.blackjack.game;
 import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
+import ca.carleton.blackjack.game.message.MessageUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static ca.carleton.blackjack.game.message.MessageUtil.message;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections.CollectionUtils.size;
 import static org.apache.commons.collections.MapUtils.isNotEmpty;
@@ -48,6 +51,82 @@ public class BlackJackGame {
 
     @Autowired
     private BlackJackService blackJackService;
+
+    /**
+     * Start the game by dealing out the initial round of cards.
+     */
+    public void dealInitialHands() {
+        this.players.forEach((uid, player) -> {
+            final Card hiddenCard = this.deck.draw();
+            hiddenCard.setHidden(true);
+            player.getHand().addCard(hiddenCard);
+            player.getHand().addCard(this.deck.draw());
+            LOG.info("Dealt {} to {}.", player.getHand(), uid);
+        });
+    }
+
+    /**
+     * Build a list of messages to send to each player session, which contains the hand states of each card so far.
+     *
+     * @return the map of player keyed to their list of messages.
+     */
+    public Map<Player, List<TextMessage>> buildHandMessages() {
+        final Map<Player, List<TextMessage>> messages = new HashMap<>();
+
+        int otherPlayerIndex = 1;
+
+        // We only need to do this for real players.
+        for (final Player player : this.getConnectedRealPlayers()) {
+
+            messages.putIfAbsent(player, new ArrayList<>());
+            final List<TextMessage> playerMessages = messages.get(player);
+
+            // Step 0, build the message that we're dealing the cards.
+            playerMessages.add(message(MessageUtil.Message.DEALING_CARDS).build());
+
+            // Step 1, build the messages to send the player their cards.
+            player.getHand()
+                    .getCards()
+                    .forEach(card -> {
+                        // Make it temporarily visible to the player (i.e we want to show it to the person).
+                        if (card.isHidden()) {
+                            card.setHidden(false);
+                            playerMessages.add(message(MessageUtil.Message.ADD_PLAYER_CARD,
+                                    card.toHTMLString()).build());
+                            card.setHidden(true);
+                        } else {
+                            playerMessages.add(message(MessageUtil.Message.ADD_PLAYER_CARD,
+                                    card.toHTMLString()).build());
+                        }
+                    });
+
+            // Step 2, build the messages to send the player the dealer's cards.
+            this.getDealer().getHand()
+                    .getCards()
+                    .forEach(card -> playerMessages.add(message(MessageUtil.Message.ADD_DEALER_CARD,
+                            card.toHTMLString()).build()));
+
+            final List<Player> playersOtherThanCurrent = this.getConnectedPlayers().stream()
+                    .filter(other -> !player.equals(other))
+                    .filter(other -> (other instanceof AIPlayer && !((AIPlayer) other).isDealer()) || other.isReal())
+                    .collect(Collectors.toList());
+
+            // Step 3, build the messages to send the player the other player's (AI's) cards.
+            for (final Player playerOtherThanCurrent : playersOtherThanCurrent) {
+                for (final Card card : playerOtherThanCurrent.getHand().getCards()) {
+                    playerMessages.add(message(MessageUtil.Message.ADD_OTHER_PLAYER_CARD,
+                            card.toHTMLString(),
+                            otherPlayerIndex,
+                            this.getSessionIdFor(playerOtherThanCurrent))
+                            .build());
+                }
+                otherPlayerIndex++;
+            }
+            otherPlayerIndex = 1;
+        }
+
+        return messages;
+    }
 
     /**
      * The game state we're in *
@@ -290,6 +369,21 @@ public class BlackJackGame {
     }
 
     /**
+     * Get the session id for the given player
+     *
+     * @param player the player..
+     * @return the string id.
+     */
+    public String getSessionIdFor(final Player player) {
+        for (final Map.Entry<String, Player> entry : this.players.entrySet()) {
+            if (entry.getValue().equals(player)) {
+                return entry.getKey();
+            }
+        }
+        return "Invalid UID";
+    }
+
+    /**
      * Get the player for the given session.
      *
      * @param session the session.
@@ -319,4 +413,11 @@ public class BlackJackGame {
         );
     }
 
+    public State getGameState() {
+        return this.gameState;
+    }
+
+    public void setGameState(final State gameState) {
+        this.gameState = gameState;
+    }
 }

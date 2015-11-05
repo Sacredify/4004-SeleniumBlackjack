@@ -32,11 +32,38 @@
     width: 200%;
 }
 
-#cards {
+#playerHand {
     border: 1px solid #CCCCCC;
     border-right-color: #999999;
     border-bottom-color: #999999;
-    height: 170px;
+    height: 120px;
+    padding: 5px;
+    width: 200%;
+}
+
+#dealerHand {
+    border: 1px solid #CCCCCC;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    height: 120px;
+    padding: 5px;
+    width: 200%;
+}
+
+#otherHand1 {
+    border: 1px solid #CCCCCC;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    height: 120px;
+    padding: 5px;
+    width: 200%;
+}
+
+#otherHand2 {
+    border: 1px solid #CCCCCC;
+    border-right-color: #999999;
+    border-bottom-color: #999999;
+    height: 120px;
     padding: 5px;
     width: 200%;
 }

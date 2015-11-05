@@ -1,4 +1,5 @@
 var ws = null;
+var playerId = null;
 
 function setConnected(connected) {
     document.getElementById('connect').disabled = connected;
@@ -25,8 +26,10 @@ function setUID(uid) {
     if (uid != null) {
         var stripped = uid.replace(/\./g, ' ');
         document.getElementById('consoleText').innerHTML = 'Console (UID: ' + stripped + ')';
+        playerId = uid;
     } else {
         document.getElementById('consoleText').innerHTML = 'Console';
+        playerId = '';
     }
 }
 /**
@@ -64,19 +67,6 @@ function disconnect() {
 }
 
 /**
- * Echo a message.
- */
-function echo() {
-    if (ws != null) {
-        var message = document.getElementById('message').value;
-        log('Sent: ' + message);
-        ws.send(message);
-    } else {
-        alert('WebSocket connection not established, please connect.');
-    }
-}
-
-/**
  * Determine what to do with the message.
  *
  * @param message the message.
@@ -107,12 +97,22 @@ function dispatch(message) {
             setAdmin(true);
             enableStart(false);
             break;
-        case 'ADD+CARD':
-            addCard(split[2]);
+        case 'ADD+PLAYER+CARD':
+            addCardForPlayer(split[2]);
+            break;
+        case 'ADD+DEALER+CARD':
+            addCardForDealer(split[2]);
+            break;
+        case 'ADD+OTHER+PLAYER+CARD':
+            addCardForOther(split[2], split[3], split[4]);
             break;
         case 'READY+TO+START':
             log(logMessage);
             enableStart(true);
+            break;
+        case 'DEALING+CARDS':
+            removeCards();
+            log(logMessage);
             break;
         default:
             console.log('Unknown message received');
@@ -121,12 +121,40 @@ function dispatch(message) {
 }
 
 /**
- * Add a new card to that shit.
+ * Send the start message.
  */
-function addCard(card) {
+function start() {
+    ws.send('START_GAME');
+    enableStart(false);
+}
+
+/**
+ * Add a new card to the player's list.
+ */
+function addCardForPlayer(card) {
     var li = document.createElement('li');
     li.innerHTML = card;
-    document.getElementById('hand').appendChild(li);
+    document.getElementById('playerHandCards').appendChild(li);
+}
+
+/**
+ * Add a new card to the dealer's list
+ */
+function addCardForDealer(card) {
+    var li = document.createElement('li');
+    li.innerHTML = card;
+    document.getElementById('dealerHandCards').appendChild(li);
+}
+
+/**
+ * Add a new card for another player.
+ */
+function addCardForOther(card, id, sessionID) {
+    var li = document.createElement('li');
+    li.innerHTML = card;
+    console.log('Trying to append to ' + 'otherHandCards'.concat(id));
+    document.getElementById('otherHandCards'.concat(id)).appendChild(li);
+    document.getElementById('otherHandText'.concat(id)).innerHTML = "Other Player's Hand (" + sessionID + ")";
 }
 
 /**
@@ -134,7 +162,10 @@ function addCard(card) {
  */
 function removeCards() {
     console.log('Emptied cards.');
-    document.getElementById('hand').innerHTML = "";
+    document.getElementById('playerHandCards').innerHTML = "";
+    document.getElementById('dealerHandCards').innerHTML = "";
+    document.getElementById('otherHandCards1').innerHTML = "";
+    document.getElementById('otherHandCards2').innerHTML = "";
 }
 
 /**
@@ -195,7 +226,7 @@ function shutdown() {
     $.post(
         "http://localhost:8080/shutdown",
         null,
-        function (data) {
+        function () {
             alert("Website shutting down.");
         }
     );

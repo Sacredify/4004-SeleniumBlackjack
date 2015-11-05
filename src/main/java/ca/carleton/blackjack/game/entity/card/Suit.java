@@ -8,10 +8,20 @@ import static org.apache.commons.lang3.StringUtils.capitalize;
  * Created by Mike on 10/27/2015.
  */
 public enum Suit {
-    HEARTS,
-    CLUBS,
-    DIAMONDS,
-    SPADES;
+    HEARTS("hearts"),
+    CLUBS("clubs"),
+    DIAMONDS("diams"),
+    SPADES("spades");
+
+    private final String html;
+
+    Suit(final String html) {
+        this.html = html;
+    }
+
+    public String getHtml() {
+        return this.html;
+    }
 
     @Override
     public String toString() {

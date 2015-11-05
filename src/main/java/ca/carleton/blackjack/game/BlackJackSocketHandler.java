@@ -1,9 +1,6 @@
 package ca.carleton.blackjack.game;
 
 import ca.carleton.blackjack.game.entity.Player;
-import ca.carleton.blackjack.game.entity.card.Card;
-import ca.carleton.blackjack.game.entity.card.Rank;
-import ca.carleton.blackjack.game.entity.card.Suit;
 import ca.carleton.blackjack.session.SessionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +13,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static ca.carleton.blackjack.game.message.MessageUtil.Message;
 import static ca.carleton.blackjack.game.message.MessageUtil.message;
@@ -72,11 +71,6 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
             if (this.game.getPlayerFor(session).isAdmin()) {
                 LOG.info("Sending admin message to player.");
                 this.sendMessage(session, message(Message.ADMIN_SET).build());
-
-                // TEST CARD
-                final Card card = new Card(Rank.EIGHT, Suit.CLUBS, true);
-                this.sendMessage(session, message(Message.ADD_CARD, card.toHTMLString()).build());
-
             }
 
             if (this.game.readyToStart()) {
@@ -143,8 +137,15 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 if (this.game.readyToStart()) {
                     this.doReadyToStart();
                 }
-
                 break;
+            case "START_GAME":
+                LOG.info("Starting the game.");
+                this.game.dealInitialHands();
+                // Send each real player their cards.
+                final Map<Player, List<TextMessage>> cardMessages = this.game.buildHandMessages();
+                cardMessages.forEach((player, messages) ->
+                        messages.forEach(toSend -> this.sendMessage(player.getSession(), toSend)));
+
             default:
                 break;
         }
@@ -155,6 +156,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      */
     private void doReadyToStart() {
         this.game.registerAI();
+        this.acceptingConnections = false;
         LOG.info("Game is now ready to start - sending message!");
         final Player admin = this.game.getAdmin();
         this.sendMessage(admin.getSession(), message(Message.READY_TO_START).build());
@@ -183,7 +185,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
      * @param message the message.
      */
     private void broadCastMessage(final WebSocketSession sender, final TextMessage message) {
-        LOG.info("SENDING {} TO {}.", message.getPayload(), this.game.getConnectedPlayerSessions());
+        LOG.trace("SENDING {} TO {}.", message.getPayload(), this.game.getConnectedPlayerSessions());
         this.game.getConnectedRealPlayers().stream()
                 .map(Player::getSession)
                 .filter(session -> !session.getId().equals(sender.getId()))

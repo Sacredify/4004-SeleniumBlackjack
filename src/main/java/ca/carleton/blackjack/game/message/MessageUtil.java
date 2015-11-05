@@ -7,7 +7,7 @@ package ca.carleton.blackjack.game.message;
  */
 public class MessageUtil {
 
-    public static enum Message {
+    public enum Message {
 
         PLAYER_CONNECTED("|CONNECTED|Successfully connected to the game with unique id %s."),
         OTHER_PLAYER_CONNECTED("|OTHER+CONNECTED|%s has connected to the game."),
@@ -16,7 +16,11 @@ public class MessageUtil {
         ADMIN_SET(
                 "|ADMIN|You have been designated the admin for this game. Enter the number of players/AI and open the lobby."),
         NOT_ACCEPTING("|NOT+ACCEPTING|The game isn't accepting connections. You will be disconnected."),
-        ADD_CARD("|ADD+CARD|%s"),
+        DEALING_CARDS("|DEALING+CARDS|Displaying cards for round Please wait until it is your turn."),
+        ADD_PLAYER_CARD("|ADD+PLAYER+CARD|%s"),
+        ADD_DEALER_CARD("|ADD+DEALER+CARD|%s"),
+        // Send index 0 or 1 so we know which one to fill out, as well as their ID to set.
+        ADD_OTHER_PLAYER_CARD("|ADD+OTHER+PLAYER+CARD|%s|%s|%s"),
         READY_TO_START("|READY+TO+START|The game is now ready to begin. Press start when ready."),
         OTHER_READY_TO_START("|OTHER+READY+TO+START|The game is now ready to begin. Waiting on admin to start.");
 

@@ -27,7 +27,7 @@ public class Card {
 
     @Override
     public String toString() {
-        return this.rank + " of " + this.suit;
+        return this.rank + " of " + this.suit + String.format("[hidden:%b]", this.hidden);
     }
 
     /**
@@ -39,14 +39,14 @@ public class Card {
      * @return the HTML representation of this card.
      */
     public String toHTMLString() {
-        return String.format("<div class=\"card rank-%s %s\">\n" +
-                        "                        <span class=\"rank\">%d</span>\n" +
+        return this.isHidden() ? "<div class=\"card back\">*</div>" : String.format("<div class=\"card rank-%s %s\">\n" +
+                        "                        <span class=\"rank\">%s</span>\n" +
                         "                        <span class=\"suit\">&%s;</span>\n" +
                         "                    </div>",
                 this.rank.getHtml(),
-                this.suit.toString().toLowerCase(),
-                this.rank.getValue(),
-                this.suit.toString().toLowerCase());
+                this.suit.getHtml(),
+                this.rank.getHtml(),
+                this.suit.getHtml());
     }
 
     public boolean isHidden() {

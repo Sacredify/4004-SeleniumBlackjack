@@ -1,7 +1,7 @@
 Feature: Win Conditions
   To outline the winning conditions of the game.
 
-  Scenario: Player immediately wins if they have 7 cards without busting (7 card charlie)
+  Scenario: Player immediately wins if they have 7 cards without busting
     Given a card in the player's hand with the rank 'THREE' and suit 'DIAMONDS' and hidden 'true'
     And another card in the player's hand with the rank 'THREE' and suit 'HEARTS' and hidden 'false'
     And another card in the player's hand with the rank 'TWO' and suit 'DIAMONDS' and hidden 'false'

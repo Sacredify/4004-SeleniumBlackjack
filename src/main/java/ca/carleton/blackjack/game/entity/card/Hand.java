@@ -26,8 +26,19 @@ public class Hand {
         this.splitHand = true;
     }
 
+    private boolean isSevenCardCharlie(final boolean forSplitHand) {
+        if (forSplitHand) {
+            return this.splitCards.size() == 7 && this.getSplitHandValue() < 21L;
+        } else {
+            return this.cards.size() == 7 && this.getHandValue() < 21L;
+        }
+    }
+
     public void addCard(final Card card) {
         this.cards.add(card);
+        if (this.isSevenCardCharlie(false)) {
+            this.setHandStatus(HandStatus.SEVEN_CARD_CHARLIE);
+        }
     }
 
     public void addSplitCard(final Card card) {
@@ -35,6 +46,9 @@ public class Hand {
             throw new IllegalStateException("can't add to split hand! We didn't split yet!");
         }
         this.splitCards.add(card);
+        if (this.isSevenCardCharlie(true)) {
+            this.setHandStatus(HandStatus.SEVEN_CARD_CHARLIE);
+        }
     }
 
     public List<Card> getCards() {
@@ -50,11 +64,11 @@ public class Hand {
     }
 
     public long getHandValue() {
-        return this.handValue();
+        return this.handValue(false);
     }
 
-    public boolean isBust() {
-        return this.handValue() > 21;
+    public long getSplitHandValue() {
+        return this.handValue(true);
     }
 
     public boolean isSplitHand() {
@@ -69,10 +83,16 @@ public class Hand {
         this.handStatus = handStatus;
     }
 
-    private int handValue() {
-        return this.cards.stream()
-                .mapToInt(card -> card.getRank().getValue())
-                .sum();
+    private int handValue(final boolean forSplitHand) {
+        if (forSplitHand) {
+            return this.splitCards.stream()
+                    .mapToInt(card -> card.getRank().getValue())
+                    .sum();
+        } else {
+            return this.cards.stream()
+                    .mapToInt(card -> card.getRank().getValue())
+                    .sum();
+        }
     }
 
     @Override
@@ -86,6 +106,11 @@ public class Hand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return this.cards.toString();
     }
 
 }

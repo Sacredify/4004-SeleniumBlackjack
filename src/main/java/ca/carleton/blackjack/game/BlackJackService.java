@@ -23,6 +23,15 @@ import static org.springframework.util.CollectionUtils.containsAny;
 public class BlackJackService {
 
     /**
+     * Set the statuses of the given player hands.
+     *
+     * @param players the players.
+     */
+    public void setHandStatuses(final List<Player> players) {
+
+    }
+
+    /**
      * The action the dealer will take according to our game rules.
      *
      * @param dealer the dealer.
