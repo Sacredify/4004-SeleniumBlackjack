@@ -4,6 +4,8 @@ import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
 import ca.carleton.blackjack.game.entity.card.Rank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,8 @@ import static org.springframework.util.CollectionUtils.containsAny;
  */
 @Service
 public class BlackJackService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BlackJackService.class);
 
     /**
      * The action the dealer will take according to our game rules.
@@ -97,6 +101,7 @@ public class BlackJackService {
                         .mapToInt(card -> card.getRank().getValue())
                         .sum();
                 if (valueOfVisibleCards > (handValue - 10)) {
+                    LOG.info("Hitting because value of visible cards > (hand value - 10). Checked against {}", other);
                     return GameOption.HIT;
                 }
             }
