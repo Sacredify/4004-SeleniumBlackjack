@@ -4,6 +4,7 @@ import ca.carleton.blackjack.game.entity.AIPlayer;
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
 import ca.carleton.blackjack.game.entity.card.HandStatus;
+import ca.carleton.blackjack.game.entity.card.Rank;
 import ca.carleton.blackjack.game.message.MessageUtil;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import static ca.carleton.blackjack.game.message.MessageUtil.message;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.collections.CollectionUtils.size;
 import static org.apache.commons.collections.MapUtils.isNotEmpty;
+import static org.springframework.util.CollectionUtils.containsAny;
 
 /**
  * Model class for the game.
@@ -69,6 +71,8 @@ public class BlackJackGame {
     public void init() {
         this.players = new HashMap<>();
         this.gameState = State.WAITING_FOR_ADMIN;
+        this.turnHandler.clearAll();
+        this.roundMaxPlayers = -1;
     }
 
     /**
@@ -82,6 +86,7 @@ public class BlackJackGame {
             LOG.info("Reset {}'s state.", this.getSessionIdFor(player));
         }
         this.setGameState(State.WAITING_FOR_PLAYERS);
+        this.turnHandler.clearAll();
     }
 
     /**
@@ -99,6 +104,7 @@ public class BlackJackGame {
     public boolean isNextPlayerAI() {
         return this.turnHandler.isNextPlayerAI();
     }
+
     /**
      * Start the game by dealing out the initial round of cards.
      */
@@ -251,6 +257,33 @@ public class BlackJackGame {
     }
 
     /**
+     * Replace an existing player with an AI.
+     *
+     * @param session the old player's sesion.
+     */
+    public boolean registerReplacementAI(final WebSocketSession session) {
+        final AIPlayer aiPlayer = new AIPlayer(null);
+        final Player old = this.getPlayerFor(session);
+        if (old.getHand().isSplitHand()) {
+            aiPlayer.getHand().splitHand();
+            old.getHand().getSplitCards().forEach(card -> aiPlayer.getHand().addSplitCard(card));
+        }
+        old.getHand().getCards().forEach(card -> aiPlayer.getHand().addCard(card));
+        aiPlayer.getHand().setHandStatus(old.getHand().getHandStatus());
+        aiPlayer.setLastOption(old.getLastOption());
+
+        //What do about the admin?
+        if (old.isAdmin()) {
+            LOG.info("Because the player was administrator, resetting to clean state.");
+            return false;
+        }
+
+        this.players.remove(session.getId());
+        LOG.info("Replaced old player with new AI - copied cards.");
+        return true;
+    }
+
+    /**
      * Register the dealer.
      */
     public void registerDealer() {
@@ -267,6 +300,10 @@ public class BlackJackGame {
      * @return true if the player was removed successfully.
      */
     public boolean deregisterPlayer(final WebSocketSession session) {
+        if (this.isPlaying()) {
+            LOG.info("Replacing {} with an AI prior to removing.", session.getId());
+            return this.registerReplacementAI(session);
+        }
         return this.players.remove(session.getId()) != null;
     }
 
@@ -337,6 +374,9 @@ public class BlackJackGame {
                     } else {
                         player.getHand().addCard(drawn);
                     }
+
+                    this.swapAceValuesIfBenefit(player);
+
                 } else {
                     LOG.warn("No cards remaining! {} tried to hit.", this.getSessionIdFor(player));
                 }
@@ -401,6 +441,12 @@ public class BlackJackGame {
             this.getConnectedPlayers().stream()
                     .filter(player -> !player.equals(winner[0]))
                     .forEach(player -> player.getHand().setHandStatus(HandStatus.LOSER));
+
+            // Except those that have 21
+            this.getConnectedPlayers().stream()
+                    .filter(player -> player.getHand().getHandValue() == 21L)
+                    .forEach(player -> player.getHand().setHandStatus(HandStatus.WINNER));
+
         } else {
             // Everyone bust and lost...
             this.getConnectedPlayers().forEach(player -> player.getHand().setHandStatus(HandStatus.LOSER));
@@ -525,12 +571,34 @@ public class BlackJackGame {
         );
     }
 
-    public State getGameState() {
-        return this.gameState;
-    }
-
     public void setGameState(final State gameState) {
         this.gameState = gameState;
+    }
+
+    private void swapAceValuesIfBenefit(final Player player) {
+        if (containsAny(player.getHand().getCards(), Arrays.asList(Rank.ACE_HIGH, Rank.ACE_LOW))) {
+            return;
+        }
+
+        if (player.getHand().getHandValue() > 21) {
+            LOG.info("Player bust - checking to see if we can replace an ACE.");
+            boolean doReplace = false;
+            int indexOf = -1;
+            for (final Card card : player.getHand().getCards()) {
+                if (card.getRank() == Rank.ACE_HIGH) {
+                    LOG.info("Player has an ACE_HIGH - replacing with value 1.");
+                    indexOf = player.getHand().getCards().indexOf(card);
+                    doReplace = true;
+                    break;
+                }
+            }
+            if (doReplace) {
+                final Card card = player.getHand().getCards().remove(indexOf);
+                player.getHand().getCards().add(indexOf, new Card(Rank.ACE_LOW, card.getSuit(), card.isHidden()));
+                LOG.info("Replaced {} with {}.", card, player.getHand().getCards().get(indexOf));
+            }
+        }
+
     }
 
 }

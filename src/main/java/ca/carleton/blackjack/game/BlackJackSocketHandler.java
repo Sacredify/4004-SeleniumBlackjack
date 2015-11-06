@@ -96,14 +96,20 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(final WebSocketSession session, final CloseStatus status) {
         LOG.info("Closing session for {} with status {}.", session.getId(), status);
 
+        if (this.game.getPlayerFor(session) != null) {
+            if (this.game.getPlayerFor(session).isAdmin()) {
+                this.closeBecauseAdminLeft();
+                return;
+            }
+        }
+
         if (this.game.deregisterPlayer(session)) {
             LOG.info("Successfully deregistered session {}.", session.getId());
             this.broadCastMessage(session, message(Message.OTHER_PLAYER_DISCONNECTED, session.getId()).build());
-            // TODO Need to rollback state if necessary here.
-        }
-
-        if (this.game.isPlaying()) {
-            this.broadCastMessage(session, message(Message.OTHER_PLAYER_DISCONNECTED, session.getId()).build());
+        } else {
+            LOG.info("Disabling all accounts because the admin left.");
+            this.closeBecauseAdminLeft();
+            return;
         }
 
         // Need to deregister any existing AI if we're in a waiting state
@@ -193,6 +199,15 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    private void closeBecauseAdminLeft() {
+        LOG.info("Disabling all accounts because the admin left.");
+        this.broadCastMessageFromServer(message(Message.ALL_QUIT).build());
+        this.game.getConnectedPlayerSessions()
+                .forEach(toClose -> this.sessionHandler.registerSessionForDisconnect(toClose));
+        this.game.init();
+        this.acceptingConnections = true;
+    }
+
     /**
      * Reset the state of the game.
      */
@@ -203,6 +218,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 .forEach(player -> this.sendMessage(player.getSession(), message(Message.RESET).build()));
         this.sendMessage(admin.getSession(), message(Message.RESET_ADMIN).build());
         this.game.resetRound();
+        this.acceptingConnections = true;
         LOG.info("Reset round - waiting for admin message.");
     }
 

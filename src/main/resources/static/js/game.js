@@ -137,7 +137,7 @@ function dispatch(message) {
             break;
         case 'DEALING+CARDS':
             removeCards();
-            log(logMessage);
+            //log(logMessage);
             break;
         case 'YOUR+TURN':
             setGameOptionsEnabled(true);
@@ -160,6 +160,12 @@ function dispatch(message) {
             log(logMessage);
             setGameOptionsEnabled(false);
             enableStart(true);
+            break;
+        case 'ALL+QUIT':
+            log(logMessage);
+            setGameOptionsEnabled(false);
+            setAdmin(false);
+            enableStart(false);
             break;
         default:
             console.log('Unknown message received');

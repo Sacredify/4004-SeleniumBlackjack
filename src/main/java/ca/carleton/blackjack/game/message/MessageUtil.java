@@ -37,7 +37,8 @@ public class MessageUtil {
         WINNER("|WINNER|%s won with a score of %s!"),
         LOSER("|LOSER|%s lost, better luck next time!"),
         RESET("|RESET|Please wait for the administrator to start the next round."),
-        RESET_ADMIN("|RESET+ADMIN|To start another round, press the start button.");
+        RESET_ADMIN("|RESET+ADMIN|To start another round, press the start button."),
+        ALL_QUIT("|ALL+QUIT|The administrator has left. Current sessions will be disconnected.");
 
         private final String content;
 

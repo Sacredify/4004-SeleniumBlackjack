@@ -69,6 +69,10 @@ public class TurnHandler {
         return this.ordering.remove(0);
     }
 
+    public void clearAll() {
+        this.ordering = null;
+    }
+
     public boolean isNextPlayerAI() {
         return !isEmpty(this.ordering) && this.ordering.get(0) instanceof AIPlayer;
     }

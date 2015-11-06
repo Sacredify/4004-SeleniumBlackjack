@@ -40,6 +40,8 @@ public class SessionHandler {
                 LOG.warn("Error with closing session: {}.", exception.getMessage());
             }
         }, 2, TimeUnit.SECONDS);
-        LOG.info("Registered {} for disconnect.", session.getId());
+        if (session != null) {
+            LOG.info("Registered {} for disconnect.", session.getId());
+        }
     }
 }
