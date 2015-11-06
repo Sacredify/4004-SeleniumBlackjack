@@ -52,3 +52,14 @@ For the eclipse users, you can:
   2. `File --> Import --> Maven --> Import existing maven projects --> 4004-SeleniumBlackjack --> pom.xml selected.
   3. From there, you can do whatever. Select the main class (BlackJackApplication) and run (as application).
   4. To run the tests, you can right click src/test/java/ and do run as JUnit which will run both selenium (allow the browser to do its thing, or switch to PhantomJS) and cucumber tests. 
+
+IMPORTANT INFO
+--------------
+
+  1. When someone disconnects, if they were the admin, the entire game shuts down. Re-connect as a new admin.
+  2. When someone else disconnects, they will be replaced by an AI.
+  3. Aces are automaticlly converted when possible.
+  4. And probably some other stuff.
+  5. The cucumber tests cover basic AI functionality and whatnot.
+  6. The selenium tests will try to run through an actual game.
+  7. I'm not spending 100% more time making it 'truly testable' by allowing custom input - thats not the point of this assignment. 
