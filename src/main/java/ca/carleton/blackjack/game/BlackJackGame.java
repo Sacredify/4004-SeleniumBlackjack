@@ -411,6 +411,10 @@ public class BlackJackGame {
                     player.getLastOption() == GameOption.BUST ||
                     player.getLastOption() == GameOption.SEVEN_CARD_CHARLIE) {
                 notMakingTurn++;
+                if (player.getLastOption() == GameOption.SEVEN_CARD_CHARLIE) {
+                    LOG.info("Game over because someone has seven card charlie.");
+                    return true;
+                }
             }
         }
         return notMakingTurn == this.getConnectedPlayers().size();
@@ -452,6 +456,19 @@ public class BlackJackGame {
             this.getConnectedPlayers().forEach(player -> player.getHand().setHandStatus(HandStatus.LOSER));
         }
         LOG.info("Set hand resolutions.");
+    }
+
+    /**
+     * Resolve the round for the given player with a seven card charlie.
+     *
+     * @param player the player.
+     */
+    public void resolveRoundSevenCardCharlie(final Player player) {
+        this.getConnectedPlayers().stream()
+                .filter(other -> !player.equals(other))
+                .forEach(other -> other.getHand().setHandStatus(HandStatus.LOSER));
+        player.getHand().setHandStatus(HandStatus.SEVEN_CARD_CHARLIE);
+        LOG.info("Set hand resolutions for seven card charlie.");
     }
 
     public void revealCards(final Player player) {

@@ -172,7 +172,8 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                     this.sendMessage(player.getSession(), message(Message.BUST).build());
                 } else if (player.getLastOption() == GameOption.SEVEN_CARD_CHARLIE) {
                     this.sendMessage(player.getSession(), message(Message.SEVEN_CARD_CHARLIE).build());
-                    // TODO seven card charlie what do
+                    this.resolveSevenCardCharlie(player);
+                    return;
                 }
                 // Send to other than the player what their move was.
                 this.broadCastMessage(session, message(Message.MOVE_MADE, session.getId(), option).build());
@@ -264,6 +265,10 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 this.broadCastMessageFromServer(message(Message.MOVE_MADE,
                         this.game.getSessionIdFor(next),
                         next.getLastOption()).build());
+                if (next.getLastOption() == GameOption.SEVEN_CARD_CHARLIE) {
+                    this.resolveSevenCardCharlie(next);
+                    return;
+                }
             }
             if (this.game.isNextPlayerAI()) {
                 next = this.game.getNextPlayer();
@@ -274,6 +279,14 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         LOG.info("All AI have done their turn.");
     }
 
+    private void resolveSevenCardCharlie(final Player winner) {
+        if (this.game.isGameResolved()) {
+            this.game.resolveRoundSevenCardCharlie(winner);
+            this.sendResults();
+            this.resetGame();
+        }
+    }
+
     private void sendResults() {
         // Send cards again but show them all just in case.
         for (final Player player : this.game.getConnectedPlayers()) {
@@ -282,6 +295,10 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         this.updateCards();
         for (final Player result : this.game.getConnectedPlayers()) {
             switch (result.getHand().getHandStatus()) {
+                case SEVEN_CARD_CHARLIE:
+                    this.broadCastMessageFromServer(message(Message.CHARLIE,
+                            this.game.getSessionIdFor(result)).build());
+                    break;
                 case WINNER:
                     this.broadCastMessageFromServer(message(Message.WINNER,
                             this.game.getSessionIdFor(result),

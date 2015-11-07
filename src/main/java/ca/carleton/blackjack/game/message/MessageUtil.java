@@ -34,6 +34,7 @@ public class MessageUtil {
         BUST("|BUST|You busted! Please wait for next round."),
         SEVEN_CARD_CHARLIE("|SEVEN+CHARLIE|You got a seven card charlie and won!"),
         PROCESSING_AI("|AI+TURN|All real players have made their choices. Now processing AI decisions."),
+        CHARLIE("|CHARLIE|%s has won with a seven card charlie!"),
         WINNER("|WINNER|%s won with a score of %s!"),
         LOSER("|LOSER|%s lost, better luck next time!"),
         RESET("|RESET|Please wait for the administrator to start the next round."),
