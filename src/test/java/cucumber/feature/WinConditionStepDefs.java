@@ -31,6 +31,31 @@ public class WinConditionStepDefs {
     @Autowired
     private BlackJackGame blackJackGame;
 
+    @Given(".+player playing the game")
+    public void addPlayer() {
+        this.blackJackGame.registerPlayer(null);
+    }
+
+    @Given("player (\\d+) has a card with the rank '(.+)' and suit '(.+)' and hidden '(.+)'")
+    public void addCardForPlayer(final int index, final Rank rank, final Suit suit, final boolean hidden) {
+        this.blackJackGame.getConnectedPlayers().get(index - 1).getHand().addCard(new Card(rank, suit, hidden));
+    }
+
+    @Given("player (\\d+) has another card with the rank '(.+)' and suit '(.+)' and hidden '(.+)'")
+    public void addCardForPlayer2(final int index, final Rank rank, final Suit suit, final boolean hidden) {
+        this.blackJackGame.getConnectedPlayers().get(index - 1).getHand().addCard(new Card(rank, suit, hidden));
+    }
+
+    @When("the game is resolved")
+    public void resolve() {
+        this.blackJackGame.resolveRound();
+    }
+
+    @Then("player (\\d+) should have a hand status of '(.+)'")
+    public void checkStatus(final int index, final HandStatus option) {
+        assertThat(this.blackJackGame.getConnectedPlayers().get(index - 1).getHand().getHandStatus(), is(option));
+    }
+
     @Given(".+card in the player's hand with the rank '(.+)' and suit '(.+)' and hidden '(.+)'")
     public void addCard(final Rank rank, final Suit suit, final boolean hidden) {
         this.player.getHand().addCard(new Card(rank, suit, hidden));

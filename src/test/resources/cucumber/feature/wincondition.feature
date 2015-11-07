@@ -13,3 +13,13 @@ Feature: Win Conditions
     Then the player immediately wins with a seven card charlie
     And the player's status should be set
     And the other player's statuses should be set
+
+  Scenario: When players tie with scores, the player lowest amount of cards is the winner
+    Given A player playing the game
+    And Another player playing the game
+    When player 1 has a card with the rank 'THREE' and suit 'HEARTS' and hidden 'false'
+    And player 1 has another card with the rank 'SIX' and suit 'HEARTS' and hidden 'false'
+    And player 2 has a card with the rank 'NINE' and suit 'HEARTS' and hidden 'false'
+    When the game is resolved
+    Then player 1 should have a hand status of 'LOSER'
+    And player 2 should have a hand status of 'WINNER'
