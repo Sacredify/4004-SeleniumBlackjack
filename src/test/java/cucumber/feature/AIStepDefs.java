@@ -77,6 +77,15 @@ public class AIStepDefs {
         assertThat(this.ai.getLastOption(), is(gameOption));
     }
 
+    @Then("the AI's last move will either be '(.+)' if their hand value is less than or equal to 21, else '(.+)'")
+    public void verifyLastMoveConditional(final GameOption gameOption, final GameOption gameOption2) {
+        if (this.ai.getHand().getHandValue() <= 21) {
+            assertThat(this.ai.getLastOption(), is(gameOption));
+        } else {
+            assertThat(this.ai.getLastOption(), is(gameOption2));
+        }
+    }
+
     @Then("the other player's last move should be '(.+)'")
     public void verifyLastMoveOtherPlayer(final GameOption gameOption) {
         assertThat(this.otherPlayer.getLastOption(), is(gameOption));

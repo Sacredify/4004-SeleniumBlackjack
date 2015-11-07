@@ -24,19 +24,17 @@ Feature: AI
     And the player has decided to stay their turn
     When it is the AI's turn to make a move
     Then the AI should perform their turn
-    And the AI's last move should be 'HIT'
+    And the AI's last move will either be 'HIT' if their hand value is less than or equal to 21, else 'BUST'
     And the other player's last move should be 'STAY'
-    And the AI's hand should have one more card than before
 
   Scenario: AI should hit if their value is between 18 and 20 and another player has visible card value greater than AI's minus 10
     Given a card in the AI's hand with the rank 'QUEEN' and suit 'DIAMONDS' and hidden 'true'
     And another card in the AI's hand with the rank 'EIGHT' and suit 'HEARTS' and hidden 'false'
-    And a player with two cards in their hand consisting of 'TEN' of 'SPADES', hidden 'false' and 'THREE' of 'CLUBS', hidden 'false'
+    And a player with two cards in their hand consisting of 'NINE' of 'SPADES', hidden 'false' and 'FOUR' of 'CLUBS', hidden 'false'
     When it is the AI's turn to make a move
     Then the AI should have a hand value of between 18 and 20
     Then the AI should perform their turn
-    And the AI's last move should be 'HIT'
-    And the AI's hand should have one more card than before
+    And the AI's last move will either be 'HIT' if their hand value is less than or equal to 21, else 'BUST'
 
   Scenario: AI should stay if their value is between 18 and 20 and another player's card value is not greater than AI's minus 10
     Given a card in the AI's hand with the rank 'QUEEN' and suit 'DIAMONDS' and hidden 'true'
@@ -45,8 +43,7 @@ Feature: AI
     When it is the AI's turn to make a move
     Then the AI should have a hand value of between 18 and 20
     Then the AI should perform their turn
-    And the AI's last move should be 'HIT'
-    And the AI's hand should have one more card than before
+    And the AI's last move will either be 'HIT' if their hand value is less than or equal to 21, else 'BUST'
 
   Scenario: AI should hit in other cases
     Given a card in the AI's hand with the rank 'TWO' and suit 'DIAMONDS' and hidden 'true'
@@ -54,5 +51,4 @@ Feature: AI
     And a player with two cards in their hand consisting of 'TEN' of 'SPADES', hidden 'false' and 'THREE' of 'CLUBS', hidden 'false'
     When it is the AI's turn to make a move
     Then the AI should perform their turn
-    And the AI's last move should be 'HIT'
-    And the AI's hand should have one more card than before
+    And the AI's last move will either be 'HIT' if their hand value is less than or equal to 21, else 'BUST'

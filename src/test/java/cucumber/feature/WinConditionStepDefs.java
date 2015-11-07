@@ -1,6 +1,7 @@
 package cucumber.feature;
 
 import ca.carleton.blackjack.BlackJackApplication;
+import ca.carleton.blackjack.game.BlackJackGame;
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
 import ca.carleton.blackjack.game.entity.card.HandStatus;
@@ -10,9 +11,9 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
@@ -26,6 +27,9 @@ import static org.hamcrest.core.Is.is;
 public class WinConditionStepDefs {
 
     final Player player = new Player(null);
+
+    @Autowired
+    private BlackJackGame blackJackGame;
 
     @Given(".+card in the player's hand with the rank '(.+)' and suit '(.+)' and hidden '(.+)'")
     public void addCard(final Rank rank, final Suit suit, final boolean hidden) {
@@ -45,14 +49,16 @@ public class WinConditionStepDefs {
 
     @Then("^the player immediately wins with a seven card charlie")
     public void setWinner() throws Throwable {
-        // TODO update
-        this.player.getHand().setHandStatus(HandStatus.SEVEN_CARD_CHARLIE);
+        this.blackJackGame.registerPlayer(null);
+        this.blackJackGame.resolveRoundSevenCardCharlie(this.player);
     }
 
     @And("^the other player's statuses should be set")
     public void checkLosers() throws Throwable {
-        // TODO
-        assertThat(null, is(nullValue()));
+        assertThat(this.blackJackGame.getConnectedPlayers()
+                .stream()
+                .filter(player -> player.getHand().getHandStatus() == HandStatus.LOSER)
+                .count(), is(1L));
     }
 
     @And("^the player's status should be set")

@@ -6,7 +6,7 @@ Feature: Dealer
     And another card in the dealer's hand with the rank 'THREE' and suit 'HEARTS' and hidden 'false'
     When it is the dealer's turn to make a move
     Then the dealer should perform their turn
-    And the dealer's last move should be 'HIT'
+    And the dealer's last move will either be 'HIT' if their hand value is less than or equal to 21, else 'BUST'
     And the dealer's hand should have one more card than before
 
   Scenario: Dealer should stay if their hand value totals 17 and they do not have an ace
@@ -22,7 +22,7 @@ Feature: Dealer
     And another card in the dealer's hand with the rank 'ACE_HIGH' and suit 'HEARTS' and hidden 'false'
     When it is the dealer's turn to make a move
     Then the dealer should perform their turn
-    And the dealer's last move should be 'HIT'
+    And the dealer's last move will either be 'HIT' if their hand value is less than or equal to 21, else 'BUST'
     And the dealer's hand should have one more card than before
 
   Scenario: Dealer should hit in all other scenarios
@@ -30,7 +30,7 @@ Feature: Dealer
     And another card in the dealer's hand with the rank 'THREE' and suit 'HEARTS' and hidden 'false'
     When it is the dealer's turn to make a move
     Then the dealer should perform their turn
-    And the dealer's last move should be 'HIT'
+    And the dealer's last move will either be 'HIT' if their hand value is less than or equal to 21, else 'BUST'
     And the dealer's hand should have one more card than before
 
   Scenario: Dealer should hit in all other scenarios
@@ -38,5 +38,5 @@ Feature: Dealer
     And another card in the dealer's hand with the rank 'TEN' and suit 'HEARTS' and hidden 'false'
     When it is the dealer's turn to make a move
     Then the dealer should perform their turn
-    And the dealer's last move should be 'HIT'
+    And the dealer's last move will either be 'HIT' if their hand value is less than or equal to 21, else 'BUST'
     And the dealer's hand should have one more card than before

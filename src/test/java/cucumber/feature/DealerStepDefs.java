@@ -59,6 +59,15 @@ public class DealerStepDefs {
         assertThat(this.dealer.getLastOption(), is(gameOption));
     }
 
+    @Then("the dealer's last move will either be '(.+)' if their hand value is less than or equal to 21, else '(.+)'")
+    public void verify(final GameOption gameOption, final GameOption gameOption2) {
+        if (this.dealer.getHand().getHandValue() <= 21) {
+            assertThat(this.dealer.getLastOption(), is(gameOption));
+        } else {
+            assertThat(this.dealer.getLastOption(), is(gameOption2));
+        }
+    }
+
     @Then("the dealer's hand should have one more card than before")
     public void verifyHandSizeDifferent() {
         assertThat(this.dealer.getHand().getCards().size(), is(this.numberOfCards + 1));

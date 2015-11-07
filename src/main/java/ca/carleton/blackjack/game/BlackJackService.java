@@ -88,7 +88,7 @@ public class BlackJackService {
         }
 
         final List<Player> othersThatAreNotBust = otherPlayers.stream()
-                .filter(otherGuy -> otherGuy.getLastOption() != null && otherGuy.getLastOption() != GameOption.BUST)
+                .filter(otherGuy -> otherGuy.getLastOption() == null || (otherGuy.getLastOption() != null && otherGuy.getLastOption() != GameOption.BUST))
                 .collect(Collectors.toList());
 
         if (handValue >= 18 && handValue <= 20) {
