@@ -12,7 +12,8 @@ public class MessageUtil {
         PLAYER_CONNECTED("|CONNECTED|Successfully connected to the game with unique id %s."),
         OTHER_PLAYER_CONNECTED("|OTHER+CONNECTED|%s has connected to the game."),
         PLAYER_DISCONNECTED("|DISCONNECTED|Disconnected to the game with unique id %s."),
-        OTHER_PLAYER_DISCONNECTED("|OTHER+DISCONNECTED|%s has disconnected from the game."),
+        OTHER_PLAYER_DISCONNECTED(
+                "|OTHER+DISCONNECTED|%s has disconnected from the game. He will be replaced by an AI if he isn't the admin."),
         ADMIN_SET(
                 "|ADMIN|You have been designated the admin for this game. Enter the number of players/AI and open the lobby."),
         NOT_ACCEPTING("|NOT+ACCEPTING|The game isn't accepting connections. You will be disconnected."),

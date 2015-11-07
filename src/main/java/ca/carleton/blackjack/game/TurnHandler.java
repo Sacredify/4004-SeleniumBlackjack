@@ -64,7 +64,12 @@ public class TurnHandler {
             return false;
         }
         this.ordering.remove(indexOf);
-        this.ordering.add(indexOf, ai);
+
+        if (this.ordering.size() == 3) {
+            // should always be true - put them before [player 0, ai 1, <INSERT> 2 , DEALER]
+            this.ordering.add(2, ai);
+        }
+        LOG.info("Replaced ordering is {}", this.ordering);
         return true;
     }
 

@@ -163,6 +163,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
             case "GAME_STAY":
             case "GAME_HIT":
             case "GAME_SPLIT":
+                this.game.setWaitingOnReal(false);
                 final GameOption option = GameOption.valueOf(contents[0].split("_")[1]);
                 final Player player = this.game.getPlayerFor(session);
                 LOG.info("{} has decided to {}.", this.game.getSessionIdFor(player), option);
@@ -178,25 +179,34 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
                 // Send to other than the player what their move was.
                 this.broadCastMessage(session, message(Message.MOVE_MADE, session.getId(), option).build());
                 this.updateCards();
-                while (true) {
-                    final Player next = this.getNextPlayer();
-                    if (next.isReal()) {
-                        this.sendYourTurn(next);
-                        return;
-                    } else {
-                        this.processAI(next);
-                        this.updateCards();
-                        if (this.game.isGameResolved()) {
-                            LOG.info("No players can make a turn! Set winning statuses and send to clients.");
-                            this.game.resolveRound();
-                            this.sendResults();
-                            this.resetGame();
-                            return;
-                        }
-                    }
-                }
+                this.doNextTurn();
+                break;
+            case "LEAVING":
+                // The person that just went left, so we need to force to next.
+                this.doNextTurn();
+                break;
             default:
                 break;
+        }
+    }
+
+    private void doNextTurn() {
+        while (true) {
+            final Player next = this.getNextPlayer();
+            if (next.isReal()) {
+                this.sendYourTurn(next);
+                return;
+            } else {
+                this.processAI(next);
+                this.updateCards();
+                if (this.game.isGameResolved()) {
+                    LOG.info("No players can make a turn! Set winning statuses and send to clients.");
+                    this.game.resolveRound();
+                    this.sendResults();
+                    this.resetGame();
+                    return;
+                }
+            }
         }
     }
 
@@ -332,6 +342,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     private void sendYourTurn(final Player player) {
         LOG.info("Sending YOUR_TURN to {}", this.game.getSessionIdFor(player));
         this.sendMessage(player.getSession(), message(Message.YOUR_TURN).build());
+        this.game.setWaitingOnReal(true);
     }
 
     /**

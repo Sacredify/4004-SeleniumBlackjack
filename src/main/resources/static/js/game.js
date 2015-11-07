@@ -56,6 +56,12 @@ function connect() {
  * Disconnect from the server.
  */
 function disconnect() {
+
+    // Before we disconnect let them know we're leaving if its our turn
+    if (document.getElementById('stay').disabled === false) {
+        ws.send('LEAVING');
+    }
+
     if (ws != null) {
         ws.close();
         ws = null;

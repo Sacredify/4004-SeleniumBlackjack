@@ -58,6 +58,8 @@ public class BlackJackGame {
     @Autowired
     private BlackJackService blackJackService;
 
+    private boolean waitingOnReal;
+
     /**
      * The game state we're in *
      */
@@ -282,8 +284,7 @@ public class BlackJackGame {
         }
 
         if (!this.turnHandler.replaceDisconnectedPlayer(old, aiPlayer)) {
-            // TODO We need to force the AI to make a turn somehow...
-            throw new IllegalStateException("TODO");
+            LOG.info("AI will process their turn with the rest.");
         }
 
         this.players.remove(session.getId());
@@ -653,5 +654,14 @@ public class BlackJackGame {
             LOG.info("Replaced {} with {}.", card, player.getHand().getCards().get(indexOf));
         }
     }
+
+    public boolean isWaitingOnReal() {
+        return this.waitingOnReal;
+    }
+
+    public void setWaitingOnReal(final boolean waitingOnReal) {
+        this.waitingOnReal = waitingOnReal;
+    }
+
 
 }
