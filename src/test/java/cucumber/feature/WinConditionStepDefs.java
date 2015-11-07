@@ -56,6 +56,11 @@ public class WinConditionStepDefs {
         assertThat(this.blackJackGame.getConnectedPlayers().get(index - 1).getHand().getHandStatus(), is(option));
     }
 
+    @Then("player (\\d+) should have a hand that isn't bust")
+    public void checkNotBust(final int index) {
+        assertThat(this.blackJackGame.getConnectedPlayers().get(index - 1).getHand().getHandValue(), is(lessThan(22L)));
+    }
+
     @Given(".+card in the player's hand with the rank '(.+)' and suit '(.+)' and hidden '(.+)'")
     public void addCard(final Rank rank, final Suit suit, final boolean hidden) {
         this.player.getHand().addCard(new Card(rank, suit, hidden));
