@@ -39,7 +39,7 @@ public class TurnHandler {
         final List<Player> realPlayers = players.stream()
                 .filter(Player::isReal)
                 .collect(Collectors.toList());
-        shuffle(realPlayers);
+        // Don't shuffle - ordering is who joined first (aka the admin goes first always...)
         this.ordering.addAll(realPlayers);
 
         // Add ai players next
