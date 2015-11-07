@@ -57,6 +57,17 @@ public class TurnHandler {
         LOG.info("New ordering: {}", this.ordering);
     }
 
+    public boolean replaceDisconnectedPlayer(final Player old, final AIPlayer ai) {
+        final int indexOf = this.ordering.indexOf(old);
+        if (indexOf == -1) {
+            LOG.warn("Warning! Player that disconnect was currently taking his turn - need to force a new result.");
+            return false;
+        }
+        this.ordering.remove(indexOf);
+        this.ordering.add(indexOf, ai);
+        return true;
+    }
+
     /**
      * Get the next player to go.
      *

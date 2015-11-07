@@ -65,6 +65,7 @@ public class BlackJackService {
 
         final int handValue = (int) player.getHand().getHandValue();
         if (handValue == 21) {
+            LOG.info("Staying because AI has 21");
             return GameOption.STAY;
         }
 
@@ -80,6 +81,7 @@ public class BlackJackService {
                     if (visibleCard.getRank().getValue() == 10
                             || visibleCard.getRank() == Rank.ACE_LOW
                             || visibleCard.getRank() == Rank.ACE_HIGH) {
+                        LOG.info("Hitting because AI saw that another player stayed with 2 cards (10 visible).");
                         return GameOption.HIT;
                     }
                 }
@@ -100,14 +102,17 @@ public class BlackJackService {
                 final int valueOfVisibleCards = (int) (long) visibleCards.stream()
                         .mapToInt(card -> card.getRank().getValue())
                         .sum();
+                LOG.info("Value of visible cards for {} is {}", other, valueOfVisibleCards);
                 if (valueOfVisibleCards > (handValue - 10)) {
                     LOG.info("Hitting because value of visible cards > (hand value - 10). Checked against {}", other);
                     return GameOption.HIT;
                 }
             }
+            LOG.info("Staying because value is between 18 and 20)");
             return GameOption.STAY;
         }
 
+        LOG.info("Hitting because ran out of options.");
         return GameOption.HIT;
     }
 

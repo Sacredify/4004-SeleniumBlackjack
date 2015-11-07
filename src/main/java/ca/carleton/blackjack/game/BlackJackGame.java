@@ -83,10 +83,10 @@ public class BlackJackGame {
             player.getHand().clearHand();
             player.getHand().setHandStatus(null);
             player.setLastOption(null);
-            LOG.info("Reset {}'s state.", this.getSessionIdFor(player));
         }
         this.setGameState(State.WAITING_FOR_PLAYERS);
         this.turnHandler.clearAll();
+        LOG.info("Round reset.");
     }
 
     /**
@@ -237,9 +237,7 @@ public class BlackJackGame {
             return false;
         }
         if (session == null) {
-            // TODO need to get actual different values not just random
-            final int next = this.counter.incrementAndGet();
-            final String id = String.format("AI-%d", next);
+            final String id = this.newAIID();
             LOG.info("Adding AI {} to the game.", id);
             return this.players.putIfAbsent(id, new AIPlayer(null)) == null;
         } else {
@@ -254,6 +252,11 @@ public class BlackJackGame {
 
             return this.players.putIfAbsent(session.getId(), new Player(session)) == null;
         }
+    }
+
+    public String newAIID() {
+        final int next = this.counter.incrementAndGet();
+        return String.format("AI-%d", next);
     }
 
     /**
@@ -278,7 +281,14 @@ public class BlackJackGame {
             return false;
         }
 
+        if (!this.turnHandler.replaceDisconnectedPlayer(old, aiPlayer)) {
+            // TODO We need to force the AI to make a turn somehow...
+            throw new IllegalStateException("TODO");
+        }
+
         this.players.remove(session.getId());
+        final String id = this.newAIID();
+        this.players.put(id, aiPlayer);
         LOG.info("Replaced old player with new AI - copied cards.");
         return true;
     }
@@ -598,24 +608,31 @@ public class BlackJackGame {
         }
 
         if (player.getHand().getHandValue() > 21) {
-            LOG.info("Player bust - checking to see if we can replace an ACE.");
-            boolean doReplace = false;
-            int indexOf = -1;
-            for (final Card card : player.getHand().getCards()) {
-                if (card.getRank() == Rank.ACE_HIGH) {
-                    LOG.info("Player has an ACE_HIGH - replacing with value 1.");
-                    indexOf = player.getHand().getCards().indexOf(card);
-                    doReplace = true;
-                    break;
-                }
-            }
-            if (doReplace) {
-                final Card card = player.getHand().getCards().remove(indexOf);
-                player.getHand().getCards().add(indexOf, new Card(Rank.ACE_LOW, card.getSuit(), card.isHidden()));
-                LOG.info("Replaced {} with {}.", card, player.getHand().getCards().get(indexOf));
-            }
+            LOG.info("Player bust - checking to see if we can replace ACE.");
+            this.checkAndReplace(player);
+        } else if (player.getHand().getHandValue() >= 18 && player.getHand().getHandValue() <= 20) {
+            LOG.info("Player between 18 and 20 - checking to see if we can replace ACE.");
+            this.checkAndReplace(player);
         }
 
+    }
+
+    private void checkAndReplace(final Player player) {
+        boolean doReplace = false;
+        int indexOf = -1;
+        for (final Card card : player.getHand().getCards()) {
+            if (card.getRank() == Rank.ACE_HIGH) {
+                LOG.info("Player has an ACE_HIGH - replacing with value 1.");
+                indexOf = player.getHand().getCards().indexOf(card);
+                doReplace = true;
+                break;
+            }
+        }
+        if (doReplace) {
+            final Card card = player.getHand().getCards().remove(indexOf);
+            player.getHand().getCards().add(indexOf, new Card(Rank.ACE_LOW, card.getSuit(), card.isHidden()));
+            LOG.info("Replaced {} with {}.", card, player.getHand().getCards().get(indexOf));
+        }
     }
 
 }
