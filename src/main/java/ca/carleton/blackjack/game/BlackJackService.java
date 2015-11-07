@@ -46,7 +46,6 @@ public class BlackJackService {
             return GameOption.STAY;
         }
 
-        // TODO what about hand > 17? just keep hitting?
         return GameOption.HIT;
     }
 

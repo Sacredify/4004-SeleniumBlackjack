@@ -439,28 +439,47 @@ public class BlackJackGame {
         // Get highest value.
         final long[] highest = new long[1];
         highest[0] = 0L;
-        final Player[] winner = new Player[1];
-        winner[0] = null;
         this.getConnectedPlayers().stream()
                 .filter(player -> player.getLastOption() != GameOption.BUST)
                 .forEach(player -> {
-                    if (player.getHand().getHandValue() > highest[0]) {
+                    if (player.getHand().getHandValue() >= highest[0]) {
                         highest[0] = player.getHand().getHandValue();
-                        winner[0] = player;
                     }
                 });
-        if (winner[0] != null) {
-            winner[0].getHand().setHandStatus(HandStatus.WINNER);
-            // All others lose
-            this.getConnectedPlayers().stream()
-                    .filter(player -> !player.equals(winner[0]))
-                    .forEach(player -> player.getHand().setHandStatus(HandStatus.LOSER));
 
-            // Except those that have 21
-            this.getConnectedPlayers().stream()
-                    .filter(player -> player.getHand().getHandValue() == 21L)
-                    .forEach(player -> player.getHand().setHandStatus(HandStatus.WINNER));
+        if (highest[0] >= 0L) {
+            for (final Player player : this.getConnectedPlayers()) {
+                // Players with least cards and highest value is winner
+                if (player.getHand().getHandValue() == highest[0]) {
+                    player.getHand().setHandStatus(HandStatus.WINNER);
+                } else {
+                    player.getHand().setHandStatus(HandStatus.LOSER);
+                }
+            }
 
+            // Lowest hand size wins if multiple winners
+            int numberWinners = 0;
+            for (final Player player : this.getConnectedPlayers()) {
+                if (player.getHand().getHandStatus() == HandStatus.WINNER) {
+                    numberWinners++;
+                }
+            }
+            if (numberWinners > 0) {
+                // Get lowest amount of cards
+                final int[] leastCards = new int[1];
+                leastCards[0] = 30;
+                this.getConnectedPlayers().stream()
+                        .filter(player -> player.getHand().getHandStatus() == HandStatus.WINNER)
+                        .forEach(player -> {
+                            if (player.getHand().getCards().size() <= leastCards[0]) {
+                                leastCards[0] = player.getHand().getCards().size();
+                            }
+                        });
+                this.getConnectedPlayers().stream()
+                        .filter(player -> player.getHand().getHandStatus() == HandStatus.WINNER)
+                        .filter(player -> player.getHand().getCards().size() != leastCards[0])
+                        .forEach(player -> player.getHand().setHandStatus(HandStatus.LOSER));
+            }
         } else {
             // Everyone bust and lost...
             this.getConnectedPlayers().forEach(player -> player.getHand().setHandStatus(HandStatus.LOSER));
