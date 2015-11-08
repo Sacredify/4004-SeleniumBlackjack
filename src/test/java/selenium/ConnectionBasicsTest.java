@@ -27,8 +27,8 @@ public class ConnectionBasicsTest extends AbstractSeleniumTest {
         this.indexPage.connect();
         assertThat(this.indexPage.hasText("Successfully connected to the game with unique"), is(true));
         assertThat(this.indexPage.hasText("You have been designated the admin for this game."), is(true));
-        assertThat(this.indexPage.hasText("Connection closed"), is(true));
         this.indexPage.disconnect();
+        assertThat(this.indexPage.hasText("Connection closed"), is(true));
     }
 
     @Test
