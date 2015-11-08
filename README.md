@@ -1,9 +1,6 @@
 # 4004-SeleniumBlackjack
 A basic blackjack web application to get experience using selenium as a testing method.
 
--- REPOSITORY CURRENTLY PRIVATE.
-
-
 Some code taken from the web (spring documentation), see:
 
 https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-websocket-tomcat
@@ -18,7 +15,7 @@ Building this project requires git (or download it manually), and maven.
   2. `cd 4004-SeleniumBlackjack`
   3. `mvn clean install`
   
-TO log output
+To log output
 -------------
 
 Two options:
