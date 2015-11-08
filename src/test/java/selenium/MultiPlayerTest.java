@@ -4,11 +4,15 @@ import config.SeleniumTest;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import selenium.page.IndexPage;
 
+import java.util.List;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 
 /**
  * Tests surrounding multiple uesrs.
@@ -38,7 +42,7 @@ public class MultiPlayerTest extends AbstractSeleniumTest {
     }
 
     @Test
-    public void canMultiplePeoplePlayARound() {
+    public void canMultiplePeoplePlayARound() throws Exception {
         this.indexPage.connect();
         this.indexPage.setNumberPlayers(2);
         this.indexPage.open.click();
@@ -55,4 +59,36 @@ public class MultiPlayerTest extends AbstractSeleniumTest {
         this.disconnectSecondUser(second);
         this.indexPage.disconnect();
     }
+
+    @Test
+    public void canSecondPlayerDisconnectInProgress() {
+        this.indexPage.connect();
+        this.indexPage.setNumberPlayers(2);
+        this.indexPage.open.click();
+        final WebDriver second = this.quickConnectSecondUser();
+        // We're now ready to play
+        this.indexPage.start.click();
+        // Lets disconnect the second user.
+        this.disconnectSecondUser(second);
+        assertThat(this.indexPage.hasText("has disconnected from the game. He will be replaced by an AI"), is(true));
+        this.indexPage.stay.click();
+        assertThat(this.indexPage.hasText("To start another round, press the start button."), is(true));
+        this.indexPage.disconnect();
+    }
+
+    @Test
+    public void canAdminDisconnectGracefully() {
+        this.indexPage.connect();
+        this.indexPage.setNumberPlayers(2);
+        this.indexPage.open.click();
+        final WebDriver second = this.quickConnectSecondUser();
+        // We're now ready to play
+        this.indexPage.start.click();
+        // Lets disconnect the admin
+        this.indexPage.disconnect();
+        final List<WebElement> result = second.findElements(By.xpath("//*[contains(text(),'" + "The administrator has left. Current sessions will be disconnected" + "')]"));
+        assertThat(result.size(), is(greaterThan(0)));
+        this.disconnectSecondUser(second);
+    }
+
 }

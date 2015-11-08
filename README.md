@@ -62,4 +62,5 @@ IMPORTANT INFO
   4. And probably some other stuff.
   5. The cucumber tests cover basic AI functionality and whatnot.
   6. The selenium tests will try to run through an actual game.
-  7. I'm not spending 100% more time making it 'truly testable' by allowing custom input - thats not the point of this assignment. 
+  7. I'm not spending 100% more time making it 'truly testable' by allowing custom input - thats not the point of this assignment.
+  8. Please note there may be timing issues with the tests - they worked for me but selenium is like that. Try re-running them. Who knows?

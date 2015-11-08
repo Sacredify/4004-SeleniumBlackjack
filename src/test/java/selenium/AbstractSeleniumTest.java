@@ -12,8 +12,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 
@@ -34,7 +32,10 @@ public abstract class AbstractSeleniumTest {
     private MockUserFactory mockUserFactory;
 
     public void delay(final int seconds) {
-        this.webDriver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (final Exception ignored) {
+        }
     }
 
     /**
