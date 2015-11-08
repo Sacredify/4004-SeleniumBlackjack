@@ -18,6 +18,13 @@ Building this project requires git (or download it manually), and maven.
   2. `cd 4004-SeleniumBlackjack`
   3. `mvn clean install`
   
+TO log output
+-------------
+
+Two options:
+
+  1. `mvn clean install --log-file resultbj.txt`
+  2. `mvn clean install > resultbj.txt`
 
 To run this project
 -------------------
