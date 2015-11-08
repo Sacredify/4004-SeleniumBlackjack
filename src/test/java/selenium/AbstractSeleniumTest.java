@@ -31,6 +31,11 @@ public abstract class AbstractSeleniumTest {
     @Autowired
     private MockUserFactory mockUserFactory;
 
+    /**
+     * Wait the specified number of seconds (sleeps the test).
+     *
+     * @param seconds the number of seconds.
+     */
     public void delay(final int seconds) {
         try {
             Thread.sleep(seconds * 1000);

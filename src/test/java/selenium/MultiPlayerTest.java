@@ -51,7 +51,9 @@ public class MultiPlayerTest extends AbstractSeleniumTest {
         // We're now ready to play
         this.indexPage.start.click();
         // Admin should always go first.
+        this.delay(2);
         this.indexPage.stay.click();
+        this.delay(2);
         second.findElement(By.id("stay")).click();
         this.delay(3);
         // Now we should be resolved.

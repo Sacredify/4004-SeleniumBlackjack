@@ -35,9 +35,15 @@ public class TurnHandler {
 
         this.ordering = new ArrayList<>();
 
-        // Add real players first - excluding the ones that STAYED.
+        // Add admin
+        this.ordering.addAll(players.stream()
+                .filter(Player::isAdmin)
+                .collect(Collectors.toList()));
+
+        // Add real players minus the admin
         final List<Player> realPlayers = players.stream()
                 .filter(Player::isReal)
+                .filter(player -> !player.isAdmin())
                 .collect(Collectors.toList());
         // Don't shuffle - ordering is who joined first (aka the admin goes first always...)
         this.ordering.addAll(realPlayers);
