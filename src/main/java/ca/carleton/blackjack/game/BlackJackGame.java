@@ -305,6 +305,16 @@ public class BlackJackGame {
     }
 
     /**
+     * Check to see if the session exists.
+     *
+     * @param session the session.
+     * @return true if yes.
+     */
+    public boolean isPlayerRegistered(final WebSocketSession session) {
+        return this.players.get(session.getId()) != null;
+    }
+
+    /**
      * Remove a new player from the game.
      *
      * @param session the user's session.
@@ -312,10 +322,15 @@ public class BlackJackGame {
      */
     public boolean deregisterPlayer(final WebSocketSession session) {
         if (this.isPlaying()) {
-            LOG.info("Replacing {} with an AI prior to removing.", session.getId());
-            return this.registerReplacementAI(session);
+            if (this.isPlayerRegistered(session)) {
+                LOG.info("Replacing {} with an AI prior to removing.", session.getId());
+                return this.registerReplacementAI(session);
+            } else {
+                return true;
+            }
+        } else {
+            return !this.isPlayerRegistered(session) || this.players.remove(session.getId()) != null;
         }
-        return this.players.remove(session.getId()) != null;
     }
 
     /**

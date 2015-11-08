@@ -104,8 +104,10 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
         }
 
         if (this.game.deregisterPlayer(session)) {
+            if (this.game.isPlaying()) {
+                this.broadCastMessage(session, message(Message.OTHER_PLAYER_DISCONNECTED, session.getId()).build());
+            }
             LOG.info("Successfully deregistered session {}.", session.getId());
-            this.broadCastMessage(session, message(Message.OTHER_PLAYER_DISCONNECTED, session.getId()).build());
         } else {
             LOG.info("Disabling all accounts because the admin left.");
             this.closeBecauseAdminLeft();
