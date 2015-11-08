@@ -15,4 +15,8 @@
         <context:include-filter type="regex" expression="selenium.page\..*Page"/>
     </context:component-scan>
 
+    <context:component-scan base-package="config">
+        <context:include-filter type="regex" expression="config\..*MockUserFactory"/>
+    </context:component-scan>
+
 </beans>

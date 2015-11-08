@@ -2,12 +2,14 @@ package selenium.page;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The page for the main game.
@@ -69,7 +71,6 @@ public class IndexPage extends AbstractPage<IndexPage> {
         this.open.click();
         this.start.click();
     }
-
     public int countNumberOfCardsFor(final WebElement cardList) {
         return this.getAllCardsFor(cardList).size();
     }
@@ -110,6 +111,21 @@ public class IndexPage extends AbstractPage<IndexPage> {
     public void disconnect() {
         this.disconnect.click();
     }
+
+    /**
+     * Set the number of players.
+     *
+     * @param number the number of players.
+     */
+    public void setNumberPlayers(final int number) {
+        this.webDriver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+        if (this.webDriver instanceof JavascriptExecutor) {
+            ((JavascriptExecutor) this.webDriver).executeScript(
+                    String.format("document.getElementById('numberPlayers').setAttribute('value', '%s')", number));
+        }
+        this.webDriver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
+    }
+
 
     @Override
     protected String getPageName() {

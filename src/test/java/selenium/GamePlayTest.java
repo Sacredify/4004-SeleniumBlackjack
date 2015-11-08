@@ -73,8 +73,11 @@ public class GamePlayTest extends AbstractSeleniumTest {
         assertThat(this.indexPage.start.isEnabled(), is(false));
         // Two quick games - stay each time to make the AI run through
         this.indexPage.stay.click();
+        this.delay(3);
         this.indexPage.start.click();
+        this.delay(3);
         this.indexPage.stay.click();
+        this.delay(3);
         // Check to see if we have two game resolutions.
         final String output = this.indexPage.console.getAttribute("innerHTML");
         assertThat(StringUtils.countMatches(output, "To start another round, press the start button."), is(2));

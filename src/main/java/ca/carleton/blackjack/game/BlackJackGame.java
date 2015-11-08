@@ -74,6 +74,7 @@ public class BlackJackGame {
         this.players = new HashMap<>();
         this.gameState = State.WAITING_FOR_ADMIN;
         this.turnHandler.clearAll();
+        this.deck.reset();
         this.roundMaxPlayers = -1;
     }
 
@@ -88,6 +89,7 @@ public class BlackJackGame {
         }
         this.setGameState(State.WAITING_FOR_PLAYERS);
         this.turnHandler.clearAll();
+        this.deck.reset();
         LOG.info("Round reset.");
     }
 

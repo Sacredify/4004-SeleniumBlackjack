@@ -1,6 +1,7 @@
 package selenium;
 
 import ca.carleton.blackjack.BlackJackApplication;
+import config.MockUserFactory;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
@@ -26,6 +29,30 @@ public abstract class AbstractSeleniumTest {
 
     @Autowired
     protected WebDriver webDriver;
+
+    @Autowired
+    private MockUserFactory mockUserFactory;
+
+    public void delay(final int seconds) {
+        this.webDriver.manage().timeouts().implicitlyWait(seconds, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Connect a second user.
+     *
+     * @return the user.
+     */
+    public WebDriver quickConnectSecondUser() {
+        // Lets connect a second player
+        final WebDriver second = this.mockUserFactory.getSecondUser("http://localhost:8080");
+        second.findElement(By.id("connect")).click();
+        return second;
+    }
+
+    public void disconnectSecondUser(final WebDriver user) {
+        user.findElement(By.id("disconnect")).click();
+        user.quit();
+    }
 
     /**
      * Wait for an element to become displayed (max 3 seconds).
