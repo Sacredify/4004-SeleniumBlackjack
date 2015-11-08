@@ -37,6 +37,7 @@ public class BlackJackApplication extends SpringBootServletInitializer implement
                 .withSockJS();
     }
 
+    @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder springApplicationBuilder) {
         return springApplicationBuilder.sources(BlackJackApplication.class);
     }
