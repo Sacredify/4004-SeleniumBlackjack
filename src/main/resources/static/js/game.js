@@ -9,7 +9,7 @@ function setConnected(connected) {
 function setGameOptionsEnabled(enabled) {
     document.getElementById('stay').disabled = !enabled;
     document.getElementById('hit').disabled = !enabled;
-    document.getElementById('split').disabled = !enabled;
+    //document.getElementById('split').disabled = !enabled;
 }
 
 function setAdmin(enabled) {
