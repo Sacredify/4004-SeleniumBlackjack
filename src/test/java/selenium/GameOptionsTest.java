@@ -24,9 +24,11 @@ public class GameOptionsTest extends AbstractSeleniumTest {
     public void canUseHitOption() {
         this.indexPage.quickStart();
         assertThat(this.waitForDisplayed(this.indexPage.hit).isEnabled(), is(true));
+        final int numberCards = this.indexPage.countNumberOfCardsFor(this.indexPage.playerCards);
         this.indexPage.hit.click();
         assertThat(this.indexPage.hasText("You decided to HIT. Sending to server - please wait for your next turn."),
                 is(true));
+        assertThat(this.indexPage.countNumberOfCardsFor(this.indexPage.playerCards), is(numberCards + 1));
         this.indexPage.disconnect();
     }
 
@@ -34,9 +36,11 @@ public class GameOptionsTest extends AbstractSeleniumTest {
     public void canUseStayOption() {
         this.indexPage.quickStart();
         assertThat(this.waitForDisplayed(this.indexPage.stay).isEnabled(), is(true));
+        final int numberCards = this.indexPage.countNumberOfCardsFor(this.indexPage.playerCards);
         this.indexPage.stay.click();
         assertThat(this.indexPage.hasText("You decided to STAY. Sending to server - please wait for your next turn."),
                 is(true));
+        assertThat(this.indexPage.countNumberOfCardsFor(this.indexPage.playerCards), is(numberCards));
         this.indexPage.disconnect();
     }
 
