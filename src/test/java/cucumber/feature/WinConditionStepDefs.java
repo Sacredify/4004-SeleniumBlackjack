@@ -2,6 +2,7 @@ package cucumber.feature;
 
 import ca.carleton.blackjack.BlackJackApplication;
 import ca.carleton.blackjack.game.BlackJackGame;
+import ca.carleton.blackjack.game.GameOption;
 import ca.carleton.blackjack.game.entity.Player;
 import ca.carleton.blackjack.game.entity.card.Card;
 import ca.carleton.blackjack.game.entity.card.HandStatus;
@@ -44,6 +45,11 @@ public class WinConditionStepDefs {
     @Given("player (\\d+) has another card with the rank '(.+)' and suit '(.+)' and hidden '(.+)'")
     public void addCardForPlayer2(final int index, final Rank rank, final Suit suit, final boolean hidden) {
         this.blackJackGame.getConnectedPlayers().get(index - 1).getHand().addCard(new Card(rank, suit, hidden));
+    }
+
+    @And("player (\\d+) has his last option as '(.+)'")
+    public void setOption(final int index, final GameOption option) {
+        this.blackJackGame.getConnectedPlayers().get(index - 1).setLastOption(option);
     }
 
     @When("the game is resolved")

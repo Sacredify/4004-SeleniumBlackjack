@@ -34,3 +34,18 @@ Feature: Win Conditions
     Then player 1 should have a hand status of 'WINNER'
     And player 2 should have a hand status of 'LOSER'
     And player 1 should have a hand that isn't bust
+
+  Scenario: No winners are possible when everyone busts
+    Given a player playing the game
+    And Another player playing the game
+    When player 1 has a card with the rank 'TEN' and suit 'SPADES' and hidden 'false'
+    And player 1 has another card with the rank 'TEN' and suit 'HEARTS' and hidden 'false'
+    And player 1 has another card with the rank 'TEN' and suit 'DIAMONDS' and hidden 'false'
+    And player 2 has a card with the rank 'TEN' and suit 'CLUBS' and hidden 'false'
+    And player 2 has another card with the rank 'JACK' and suit 'HEARTS' and hidden 'false'
+    And player 2 has another card with the rank 'QUEEN' and suit 'HEARTS' and hidden 'false'
+    And player 1 has his last option as 'BUST'
+    And player 2 has his last option as 'BUST'
+    When the game is resolved
+    Then player 1 should have a hand status of 'LOSER'
+    And player 2 should have a hand status of 'LOSER'
