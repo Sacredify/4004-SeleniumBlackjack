@@ -19,7 +19,6 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
  * <p/>
  * Created by Mike on 10/6/2015.
  */
-@SuppressWarnings("SpringJavaAutowiredMembersInspection")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = BlackJackApplication.class, locations = {"/META-INF/applicationContext.xml"})
 @WebIntegrationTest(value = "server.port:8080")
