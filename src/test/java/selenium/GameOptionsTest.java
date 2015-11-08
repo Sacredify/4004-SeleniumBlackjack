@@ -10,7 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 /**
- * Test our game options.
+ * Test our game options - whether we get a card, etc.
  * <p/>
  * Created by Mike on 11/8/2015.
  */
@@ -52,6 +52,17 @@ public class GameOptionsTest extends AbstractSeleniumTest {
         this.indexPage.split.click();
         assertThat(this.indexPage.hasText("You decided to SPLIT. Sending to server - please wait for your next turn."),
                 is(true));
+        this.indexPage.disconnect();
+    }
+
+    @Test
+    public void canPlayFullRound() {
+        this.indexPage.quickStart();
+        assertThat(this.indexPage.start.isEnabled(), is(false));
+        this.indexPage.stay.click();
+        // By now the AI should've done everything - start should be re-enabled.
+        assertThat(this.indexPage.start.isEnabled(), is(true));
+        assertThat(this.indexPage.hasText("To start another round, press the start button."), is(true));
         this.indexPage.disconnect();
     }
 }
