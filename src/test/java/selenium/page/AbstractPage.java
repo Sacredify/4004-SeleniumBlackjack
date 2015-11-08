@@ -1,6 +1,8 @@
 package selenium.page;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,6 +62,17 @@ public abstract class AbstractPage<T extends AbstractPage<T>> {
 
     public String getUrl() {
         return this.webDriver.getCurrentUrl();
+    }
+
+    /**
+     * Check whether or not the web driver can find the given text.
+     *
+     * @param searchKey the text.
+     * @return true if yes.
+     */
+    public boolean hasText(final String searchKey) {
+        final List<WebElement> result = this.webDriver.findElements(By.xpath("//*[contains(text(),'" + searchKey + "')]"));
+        return result != null && result.size() > 0;
     }
 }
 

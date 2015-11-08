@@ -33,32 +33,32 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 
     @Override
     public void prepareTestInstance(final TestContext testContext) throws Exception {
-        if (webDriver != null) {
+        if (this.webDriver != null) {
             return;
         }
         final ApplicationContext context = testContext.getApplicationContext();
         if (context instanceof ConfigurableApplicationContext) {
-            webDriver = (WebDriver) context.getBean("webDriver");
+            this.webDriver = (WebDriver) context.getBean("webDriver");
             final ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) context;
             final ConfigurableListableBeanFactory bf = configurableApplicationContext.getBeanFactory();
-            bf.registerResolvableDependency(WebDriver.class, webDriver);
+            bf.registerResolvableDependency(WebDriver.class, this.webDriver);
             LOG.info("Set web driver in text execution listener.");
         }
     }
 
     @Override
     public void beforeTestMethod(final TestContext testContext) throws Exception {
-        if (webDriver != null) {
+        if (this.webDriver != null) {
             final SeleniumTest annotation = findAnnotation(
                     testContext.getTestClass(), SeleniumTest.class);
-            webDriver.get(annotation.baseUrl());
+            this.webDriver.get(annotation.baseUrl());
         }
     }
 
     @Override
     public void afterTestClass(final TestContext testContext) throws Exception {
-        if (webDriver != null) {
-            webDriver.quit();
+        if (this.webDriver != null) {
+            this.webDriver.quit();
         }
     }
 
@@ -75,7 +75,7 @@ public class SeleniumTestExecutionListener extends AbstractTestExecutionListener
 //        Files.copy(screenshot.toPath(),
 //                Paths.get("screenshots", testName + "_" + methodName + "_" + screenshot.getName()));
         // TODO write to file or something
-        LOG.warn("Ignoring test results!!!");
+        LOG.info("Ignoring test results!!!");
     }
 
 }

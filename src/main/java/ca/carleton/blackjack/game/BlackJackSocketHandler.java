@@ -123,8 +123,7 @@ public class BlackJackSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTransportError(final WebSocketSession session, final Throwable exception)
             throws Exception {
-        LOG.error("Error with the network.", exception);
-        session.close(CloseStatus.SERVER_ERROR);
+        LOG.error("TRANSPORT ERROR - Error with the network.", exception);
     }
 
     @Override
