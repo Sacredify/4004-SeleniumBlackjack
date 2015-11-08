@@ -1,6 +1,5 @@
 package ca.carleton.blackjack;
 
-import ca.carleton.blackjack.echo.EchoWebSocketHandler;
 import ca.carleton.blackjack.game.BlackJackSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -26,9 +25,6 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class BlackJackApplication extends SpringBootServletInitializer implements WebSocketConfigurer {
 
     @Autowired
-    private EchoWebSocketHandler echoWebSocketHandler;
-
-    @Autowired
     private BlackJackSocketHandler blackJackSocketHandler;
 
     public static void main(final String[] args) {
@@ -37,8 +33,6 @@ public class BlackJackApplication extends SpringBootServletInitializer implement
 
     @Override
     public void registerWebSocketHandlers(final WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(this.echoWebSocketHandler, "/echo")
-                .withSockJS();
         webSocketHandlerRegistry.addHandler(this.blackJackSocketHandler, "/game")
                 .withSockJS();
     }
