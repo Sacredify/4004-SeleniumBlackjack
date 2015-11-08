@@ -1,6 +1,7 @@
 package selenium;
 
 import config.SeleniumTest;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import static org.hamcrest.core.Is.is;
  * Created by Mike on 11/8/2015.
  */
 @SeleniumTest
-public class GameOptionsTest extends AbstractSeleniumTest {
+public class GamePlayTest extends AbstractSeleniumTest {
 
     @Autowired
     private IndexPage indexPage;
@@ -63,6 +64,20 @@ public class GameOptionsTest extends AbstractSeleniumTest {
         // By now the AI should've done everything - start should be re-enabled.
         assertThat(this.indexPage.start.isEnabled(), is(true));
         assertThat(this.indexPage.hasText("To start another round, press the start button."), is(true));
+        this.indexPage.disconnect();
+    }
+
+    @Test
+    public void canPlayMultipleRounds() {
+        this.indexPage.quickStart();
+        assertThat(this.indexPage.start.isEnabled(), is(false));
+        // Two quick games - stay each time to make the AI run through
+        this.indexPage.stay.click();
+        this.indexPage.start.click();
+        this.indexPage.stay.click();
+        // Check to see if we have two game resolutions.
+        final String output = this.indexPage.console.getAttribute("innerHTML");
+        assertThat(StringUtils.countMatches(output, "To start another round, press the start button."), is(2));
         this.indexPage.disconnect();
     }
 }

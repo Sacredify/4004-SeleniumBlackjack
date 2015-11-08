@@ -57,6 +57,9 @@ public class IndexPage extends AbstractPage<IndexPage> {
     @FindBy(id = "otherHandCards2")
     public WebElement otherPlayer2Cards;
 
+    @FindBy(id = "console")
+    public WebElement console;
+
     /**
      * Quick start the game by connecting, opening the lobby, and starting the game.
      */
