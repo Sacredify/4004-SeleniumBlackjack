@@ -1,6 +1,10 @@
 # 4004-SeleniumBlackjack
 A basic blackjack web application to get experience using selenium as a testing method.
 
+Repository is now public because the due date has passed.
+
+CSS playing cards taken from http://selfthinker.github.io/CSS-Playing-Cards/
+
 Some code taken from the web (spring documentation), see:
 
 https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-websocket-tomcat
